@@ -1,0 +1,138 @@
+
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+
+    <!-- Font Awesome -->
+    <link href="{% static 'css/fontawesome/v5.6.3/all.css' %}" rel="stylesheet">
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap/v4.2.1/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="{% static 'css/mdb/v4.7.0/mdb.min.css' %}" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="{% static 'css/cover/style.css' %}" rel="stylesheet">
+
+    <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}">
+
+    <style type="text/css">
+      @media (min-width: 800px) and (max-width: 850px) {
+        .navbar:not(.top-nav-collapse) {
+          background: #1C2331 !important;
+        }
+      }
+    </style>
+
+
+  <title>Sophia</title>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar">
+    <div class="container">
+
+      <!-- Brand -->
+      <!-- <a class="navbar-brand" href="https://mdbootstrap.com/docs/jquery/" target="_blank">
+        <strong>Sophia</strong>
+      </a> -->
+
+      <!-- Collapse -->
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Links -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        <!-- Left -->
+        <ul class="navbar-nav mr-auto">
+
+            {% if request.user.is_authenticated %}
+              <li class="nav-item active">
+                <a class="nav-link" href="{% url 'sophia:home' %}">Home <span class="sr-only">(current)</span></a>
+              </li>
+            {% else %}
+              <li class="nav-item active">
+                <a class="nav-link" href="{% url 'sophia:cover' %}">Home <span class="sr-only">(current)</span></a>
+              </li>
+            {% endif %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'sophia:sobre' %}">Sobre</a>
+            </li>
+
+        </ul>
+
+        <!-- Right -->
+        <!-- <ul class="navbar-nav nav-flex-icons">
+          <li class="nav-item">
+            <a href="https://github.com/mdbootstrap/bootstrap-material-design" class="nav-link border border-light rounded"
+              target="_blank">
+              <i class="fas fa-sign-in-alt mr-2"></i>Entrar
+            </a>
+          </li>
+        </ul> -->
+      </div>
+    </div>
+  </nav>
+  <!-- Navbar -->
+
+  <!-- Full Page Intro -->
+
+  <div class="view" style="background-image: url('{% static 'images/mppb.jpg' %}'); background-repeat: no-repeat; background-size: cover;">
+
+
+    <!-- Mask & flexbox options-->
+    <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+
+
+      <!-- Content -->
+        {% block content %}
+          <p>Favor, inserir conteúdo nesse bloco.</p>
+        {% endblock content %}
+        <!-- Content -->
+
+
+    </div>
+    <!-- Mask & flexbox options-->
+
+  </div>
+  <!-- Full Page Intro -->
+
+  <footer class="page-footer text-center font-small  wow fadeIn">
+    <div class="footer-copyright py-3">
+        © 2018 Copyright: <a href="https://www.mppb.mpb.br" target="_blank" rel=”noopener”> LABLD/GAECO </a>
+    </div>
+  </footer>
+  <!--/.Footer-->
+
+  <!-- SCRIPTS -->
+
+    <!-- JQuery -->
+    <script type="text/javascript" src="{% static 'js/jquery/v3.3.1/jquery-3.3.1.min.js' %}"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="{% static 'js/bootstrap/v4.2.1/bootstrap.min.js' %}"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="{% static 'js/mdb/v4.7.0/mdb.min.js' %}"></script>
+    <!-- Initializations -->
+    <script type="text/javascript">
+      // Animations initialization
+      new WOW().init();
+    </script>
+
+
+</body>
+
+</html>

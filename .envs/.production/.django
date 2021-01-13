@@ -1,0 +1,42 @@
+# General
+# ------------------------------------------------------------------------------
+# DJANGO_READ_DOT_ENV_FILE=True
+DJANGO_SETTINGS_MODULE=config.settings.production
+DJANGO_SECRET_KEY=a9XScabv7o1P6g1WBvmNwZpYL2ts7eek0sK8npbMw9Wnw6XwiIFL14gROQCdINou
+DJANGO_ADMIN_URL=x9TswiG4qys1Q6NkvQI2zkQnLGxGDyRE/
+DJANGO_ALLOWED_HOSTS=.gaeco.mppb.mp.br
+
+# Security
+# ------------------------------------------------------------------------------
+# TIP: better off using DNS, however, redirect is OK too
+DJANGO_SECURE_SSL_REDIRECT=False
+
+# Email
+# ------------------------------------------------------------------------------
+MAILGUN_API_KEY=
+DJANGO_SERVER_EMAIL=
+MAILGUN_DOMAIN=
+
+# AWS
+# ------------------------------------------------------------------------------
+DJANGO_AWS_ACCESS_KEY_ID=
+DJANGO_AWS_SECRET_ACCESS_KEY=
+DJANGO_AWS_STORAGE_BUCKET_NAME=
+
+# django-allauth
+# ------------------------------------------------------------------------------
+DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
+
+# Gunicorn
+# ------------------------------------------------------------------------------
+WEB_CONCURRENCY=4
+
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0
+
+# LDAP
+# ------------------------------------------------------------------------------
+AD_SERVER_URL=ldap://10.128.0.20
+AD_DOMAIN=@intranet.mppb

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block heading %}{% endblock heading %}
+
+{% block content %}
+
+  <section>
+    <div class="card">
+
+      <div class="card-body">
+        <div class="card-title">
+          <h4>Meus áudios</h4>
+        </div>
+
+        <table class="display table table-striper table-bordered">
+          <thead>
+            <tr>
+              <th>Descrição</th>
+              <th>Conteúdo</th>
+              <th>Transcrito</th>
+              <th>Preview</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for audio in meus_audios %}
+              <tr>
+                <td>
+                  <a href='{% url "audios:audio" audio.id  %}'>{{audio.nome}}</a>
+                </td>
+                <td>
+                  <audio src="{{audio.doc.url}}" controls></audio>
+                </td>
+                <td>
+                  {{audio.foi_transcrito}}
+                </td>
+                <td>
+                  {{audio.transcricao|slice:":50"}}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="card my-2">
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
+
+

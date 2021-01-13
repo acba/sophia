@@ -1,0 +1,26 @@
+
+  {% extends 'cover.base.html' %}
+
+  {% block content %}
+
+
+<div class="text-center white-text mx-5 wow fadeIn">
+  <h1 class="mb-4">
+    <strong>Sophia</strong>
+  </h1>
+
+  <p>
+    <strong>Sistema para processamento de audios e texto</strong>
+  </p>
+
+
+  {% if request.user.is_authenticated %}
+    <a class="btn btn-outline-white btn-lg" href="{% url 'sophia:home' %}">Começar <i class="fas fa-sign-in-alt ml-2"></i></a>
+  {% else %}
+    <a class="btn btn-outline-white btn-lg" href="{% url 'account_login' %}">Entrar <i class="fas fa-sign-in-alt ml-2"></i></a>
+  {% endif %}
+</div>
+
+  {% endblock %}
+
+

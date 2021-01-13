@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    image: sophia_local_django
+    volumes:
+      - .:/app
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.mssql
+    depends_on:
+      - mssql
+    ports:
+      - "8000:8000"
+    command: /start
+
+  mssql:
+    build:
+      context: .
+      dockerfile: ./compose/local/mssql/Dockerfile
+    image: sophia_local_mssql
+    environment:
+      SA_PASSWORD: "!MSSQL2017_sophia"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"

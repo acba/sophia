@@ -1,0 +1,20 @@
+
+  {% extends "base.html" %}
+  {% load static %}
+
+  {% block heading %}{% endblock heading %}
+
+  {% block content %}
+  <div class="card card-cascade wider reverse my-4">
+      <div class="view view-cascade overlay wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
+          <img src="{% static 'images/mppb_cortado.jpg' %}" class="img-fluid">
+      </div>
+      <div class="card-body card-body-cascade text-center wow fadeIn animated" data-wow-delay="0.2s" style="visibility: visible; animation-name: fadeIn; animation-delay: 0.2s;">
+        <h4 class="card-title"><strong>Bem vindo!</strong></h4>
+
+        <p class="card-text">Seja bem vindo ao Sophia.</p>
+    </div>
+  </div>
+
+  {% endblock content %}
+

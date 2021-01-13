@@ -1,0 +1,6 @@
+-r ./base.txt
+
+# Django
+# ------------------------------------------------------------------------------
+# Django==2.1.4 # https://www.djangoproject.com/
+# django-environ==0.4.5  # https://github.com/joke2k/django-environ

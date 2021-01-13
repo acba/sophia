@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=sophia
+POSTGRES_USER=noffXwNGjlcdMRYaislPFroOJLZzQGOn
+POSTGRES_PASSWORD=dPuOHBA4dVCrNFTzGLCwahw68WBe5DM9eEYikjZeKK8zPRlyLB4s6w8OeyGdbdgD

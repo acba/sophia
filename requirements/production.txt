@@ -1,0 +1,19 @@
+# PRECAUTION: avoid production dependencies that aren't in development
+
+-r ./base.txt
+
+gunicorn==20.0.4  # https://github.com/benoitc/gunicorn
+
+# Django
+# ------------------------------------------------------------------------------
+django-redis==4.10.0  # https://github.com/niwinz/django-redis
+
+
+
+
+# Conexão MS SQL Server
+# ------------------------------------------------------------------------------
+pyodbc==4.0.30
+django-pyodbc-azure==2.1.0.0
+
+

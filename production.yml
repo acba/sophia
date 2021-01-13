@@ -1,0 +1,37 @@
+version: '3'
+
+volumes:
+  production_django: {}
+
+services:
+
+  redis:
+    image: redis:3.2
+
+  django:
+    build:
+      context: .
+      dockerfile: ./compose/production/django/Dockerfile
+    image: mapariscos_production_django
+    depends_on:
+      - redis
+    volumes:
+      - production_django:/app
+    env_file:
+      - ./.envs/.production/.django
+    ports:
+      - "5000:5000"
+    command: /start
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./compose/production/nginx/Dockerfile
+    image: mapariscos_production_nginx
+    depends_on:
+      - django
+    volumes:
+      - production_django:/app
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"

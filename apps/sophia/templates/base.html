@@ -1,0 +1,233 @@
+
+  {% load static i18n %}
+  {% load static %}
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Sophia</title>
+
+
+    <!-- Font Awesome -->
+    <link href="{% static 'css/fontawesome/v5.6.3/all.css' %}" rel="stylesheet">
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap/v4.2.1/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="{% static 'css/mdb/v4.7.0/mdb.min.css' %}" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="{% static 'css/base/style.css' %}" rel="stylesheet">
+
+    <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}">
+
+    <!-- JQuery -->
+    <script type="text/javascript" src="{% static 'js/jquery/v3.3.1/jquery-3.3.1.min.js' %}"></script>
+    <script type="text/javascript">
+      // Seta variaveis python para javascript
+      var x = `{{js_vars | safe}}`;
+      let JS_VARS = (x) ? JSON.parse(x) : {};
+    </script>
+
+
+
+</head>
+
+<body class="fixed-sn white-skin">
+
+  <!--Main Navigation-->
+  <header>
+
+    <!-- Sidebar navigation -->
+    <div id="slide-out" class="side-nav sn-bg-4 fixed">
+      <ul class="custom-scrollbar">
+
+        <!-- Logo -->
+        <li class="logo-sn waves-effect" style="height: 232px;">
+          <div class="text-center">
+
+            <a href="#" class="pl-0"><img src="{% static 'images/logo_mppb.png' %}" class=""></a>
+
+          </div>
+        </li>
+        <!--/. Logo -->
+
+        <!--Search Form-->
+        <!-- <li>
+          <form class="search-form" role="search">
+            <div class="form-group md-form mt-0 pt-1 waves-light">
+              <input type="text" class="form-control" placeholder="Search">
+            </div>
+          </form>
+        </li> -->
+        <!--/.Search Form-->
+
+        <!-- Side navigation links -->
+        <li>
+          <ul class="collapsible collapsible-accordion">
+            <!-- Home -->
+
+            <li>
+              <a href="{% url 'sophia:home' %}" class="collapsible-header waves-effect"><i class="fas fa-home"></i> Home</a>
+            </li>
+
+            {% block sidebar_items %}
+            <li>
+              <a href="{% url 'sophia:home' %}" class="collapsible-header waves-effect"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            </li>
+            <li>
+              <a href="{% url 'audios:lista_audios' %}" class="collapsible-header waves-effect"><i class="fas fa-volume-up"></i> Áudios</a>
+            </li>
+            <li>
+              <a href="{% url 'sophia:home' %}" class="collapsible-header waves-effect"><i class="fas fa-file"></i> Documentos</a>
+            </li>
+            {% endblock sidebar_items %}
+
+
+          </ul>
+        </li>
+        <!--/. Side navigation links -->
+      </ul>
+      <div class="sidenav-bg mask-strong"></div>
+    </div>
+    <!--/. Sidebar navigation -->
+
+    <!-- Navbar -->
+    <nav class="navbar fixed-top navbar-expand-lg scrolling-navbar double-nav">
+      <!-- SideNav slide-out button -->
+      <div class="float-left">
+        <a href="#" data-activates="slide-out" class="button-collapse black-text"><i class="fas fa-bars"></i></a>
+      </div>
+
+      <!-- Breadcrumb-->
+      <div class="breadcrumb-dn mr-auto font-weight-bold">
+        <p>Sophia</p>
+      </div>
+
+      <!--Navbar links-->
+
+      <ul class="nav navbar-nav nav-flex-icons ml-auto">
+
+        {% if request.user.is_superuser %}
+          <li class="nav-item">
+            <a href="{% url 'admin:index' %}" class="nav-link waves-effect"><i class="fas fa-user-cog"></i> <span class="clearfix d-none d-sm-inline-block">Admin</span></a>
+          </li>
+        {% endif %}
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle waves-effect" href="#" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-user"></i> <span class="clearfix d-none d-sm-inline-block">Perfil</span></a>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+            <a href="{% url 'users:detail' request.user.username %}" class="dropdown-item">Perfil</a>
+            <a href="{% url 'account_logout' %}" class="dropdown-item" >Sair</a>
+          </div>
+        </li>
+
+      </ul>
+
+      <!--/Navbar links-->
+    </nav>
+    <!-- /.Navbar -->
+
+  </header>
+  <!--Main Navigation-->
+
+  <!--Main layout-->
+  <main>
+    <div class="container-fluid">
+
+      <!-- Heading -->
+
+        {% block heading %}
+          <div class="card mb-4 wow fadeIn">
+
+            <!--Card content-->
+            <div class="card-body d-sm-flex justify-content-between">
+              <h4 class="mb-2 mb-sm-0 pt-1">
+                <a href="{% url 'sophia:home' %}">Home Page</a>
+              </h4>
+            </div>
+
+          </div>
+        {% endblock heading %}
+
+      <!-- Heading -->
+
+
+        {% block content %}
+          <!--Grid row-->
+          <div class="row wow fadeIn">
+            <div class="col-md-12 mb-4">
+              <div class="card">
+                <div class="card-body">
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--Grid row-->
+        {% endblock content %}
+
+
+    </div>
+  </main>
+  <!--Main layout-->
+
+  <!--Footer-->
+  <footer class="page-footer pt-0 mt-5 mdb-color lighten-4">
+    <!-- Copyright -->
+    <div class="footer-copyright py-3 text-center">
+      <div class="container-fluid">
+        © 2018 Copyright: <a href="https://www.mppb.mpb.br" target="_blank" rel=”noopener”> LABLD/GAECO</a>
+      </div>
+    </div>
+  </footer>
+  <!--/.Footer-->
+
+  <!-- SCRIPTS -->
+
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="{% static 'js/bootstrap/v4.2.1/bootstrap.min.js' %}"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="{% static 'js/mdb/v4.7.0/mdb.min.js' %}"></script>
+    <!-- Initializations -->
+    <!-- <script type="text/javascript">
+      // Animations initialization
+      new WOW().init();
+    </script> -->
+    <script>
+      // SideNav Initialization
+      $(".button-collapse").sideNav();
+
+      var container = document.querySelector('.custom-scrollbar');
+      Ps.initialize(container, {
+        wheelSpeed: 2,
+        wheelPropagation: true,
+        minScrollbarLength: 20
+      });
+
+      // Data Picker Initialization
+      $('.datepicker').pickadate();
+
+      // Material Select Initialization
+      $(document).ready(function () {
+        $('.mdb-select').material_select();
+      });
+
+      // Tooltips Initialization
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
+
+    </script>
+
+</body>
+
+</html>

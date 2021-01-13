@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+
+# N.B. If only .env files supported variable expansion...
+export CELERY_BROKER_URL="${REDIS_URL}"
+
+
+
+
+mssql_ready() {
+python << END
+import sys
+
+import pyodbc
+
+try:
+    cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=${MSSQL_HOST};DATABASE=${MSSQL_DB};UID=${MSSQL_USER};PWD=${MSSQL_PASSWORD}')
+    cursor = cnxn.cursor()
+
+except pyodbc.ProgrammingError:
+    sys.exit(-1)
+sys.exit(0)
+
+END
+}
+until mssql_ready; do
+  >&2 echo 'Waiting for MSSQL to become available...'
+  sleep 1
+done
+>&2 echo 'MSSQL is available'
+
+
+
+
+
+exec "$@"

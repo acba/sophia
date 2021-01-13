@@ -1,0 +1,6 @@
+# Microsoft SQL Server
+# ------------------------------------------------------------------------------
+MSSQL_HOST=mssql
+MSSQL_DB=BD_SOPHIA
+MSSQL_USER=sa
+MSSQL_PASSWORD=!MSSQL2017_sophia
