@@ -37,8 +37,8 @@ urlpatterns = [
     path('api/', include('apps.api.urls')),
 
      # APPS
-    path('uploader/', include('apps.uploader.urls')),
     path('audios/', include('apps.audios.urls')),
+    path('docs/', include('apps.docs.urls')),
 
 ] + static(
     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT

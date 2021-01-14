@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block heading %}{% endblock heading %}
+
+{% block content %}
+
+  <section>
+    <div class="card">
+
+      <div class="card-body">
+        <div class="card-title">
+          <h4>Documento : {{textdoc.nome}}</h4>
+        </div>
+
+        {% if textdoc.foi_transcrito %}
+          <div>
+            <h5>Transcrição</h5>
+
+          </div>
+        {% else %}
+          <div>
+            <a class="btn btn-primary" href="{% url 'audios:transcreve_audio' textdoc.id %}" role="button">Processar</a>
+          </div>
+        {%endif%}
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
+
+

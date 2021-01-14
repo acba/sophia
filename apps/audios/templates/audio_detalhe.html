@@ -12,22 +12,24 @@
           <h4>Áudio : {{audiodoc.nome}}</h4>
         </div>
 
-        <audio src="{{audiodoc.doc.url}}" controls></audio>
+        <div>
+          <audio src="{{audiodoc.file.url}}" controls></audio>
+        </div>
 
         {% if audiodoc.foi_transcrito %}
           <div>
             <h5>Transcrição</h5>
             <div>{{audiodoc.transcricao}}</div>
+
+            <div>
+              <a class="btn btn-primary" href="{% url 'audios:transcreve_audio' audiodoc.id %}" role="button">Processar texto</a>
+            </div>
           </div>
         {% else %}
           <div>
-            <!-- <form action="{% url 'audios:transcreve_audio' audiodoc.id %}" method="post" enctype="multipart/form-data"> -->
-              <a class="btn btn-primary" href="{% url 'audios:transcreve_audio' audiodoc.id %}" role="button">Transcrever</a>
-              <!-- <button type="submit" class="btn btn-primary">Transcrever</button> -->
-            <!-- </form> -->
+            <a class="btn btn-primary" href="{% url 'audios:transcreve_audio' audiodoc.id %}" role="button">Transcrever</a>
           </div>
         {%endif%}
-
       </div>
     </div>
   </section>

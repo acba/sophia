@@ -77,13 +77,10 @@
 
             {% block sidebar_items %}
             <li>
-              <a href="{% url 'sophia:home' %}" class="collapsible-header waves-effect"><i class="fas fa-chart-pie"></i> Dashboard</a>
-            </li>
-            <li>
               <a href="{% url 'audios:lista_audios' %}" class="collapsible-header waves-effect"><i class="fas fa-volume-up"></i> Áudios</a>
             </li>
             <li>
-              <a href="{% url 'sophia:home' %}" class="collapsible-header waves-effect"><i class="fas fa-file"></i> Documentos</a>
+              <a href="{% url 'docs:lista_docs' %}" class="collapsible-header waves-effect"><i class="fas fa-file"></i> Documentos</a>
             </li>
             {% endblock sidebar_items %}
 
@@ -138,7 +135,7 @@
   <!--Main Navigation-->
 
   <!--Main layout-->
-  <main>
+  <main class='mx-3 mx-sm-1'>
     <div class="container-fluid">
 
       <!-- Heading -->

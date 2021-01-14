@@ -32,16 +32,14 @@ def upload_audio(request):
     else:
         form = AudioDocumentForm()
 
-    return render(request, 'audios.html', { 'form': form })
+    return render(request, 'audio_upload.html', { 'form': form })
 
 def transcreve_audio(request, audioid):
     if request.method == 'GET':
         audiodoc = AudioDocument.objects.filter(id=audioid).first()
-        print(audiodoc)
 
         stream = vr.read_file(audiodoc.doc.path)
         dados = vr.stream_to_text(stream)
-        print('dados', dados)
 
         audiodoc.transcricao = dados
         audiodoc.foi_transcrito = True

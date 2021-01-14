@@ -9,33 +9,29 @@
 
       <div class="card-body">
         <div class="card-title">
-          <h4>Meus áudios</h4>
+          <h4>Meus documentos</h4>
         </div>
 
         <table class="display table table-striper table-bordered">
           <thead>
             <tr>
               <th>Descrição</th>
-              <th>Conteúdo</th>
-              <th>Transcrito</th>
+              <th>Processado</th>
               <th>Preview</th>
             </tr>
           </thead>
 
           <tbody>
-            {% for audio in meus_audios %}
+            {% for doc in meus_docs %}
               <tr>
                 <td>
-                  <a style="color: #007bff;" href='{% url "audios:audio" audio.id  %}'>{{audio.nome}}</a>
+                  <a style="color: #007bff;" href='{% url "docs:doc" doc.id  %}'>{{doc.nome}}</a>
                 </td>
                 <td>
-                  <audio src="{{audio.file.url}}" controls></audio>
+                  {{doc.foi_transcrito}}
                 </td>
                 <td>
-                  {{audio.foi_transcrito}}
-                </td>
-                <td>
-                  {{audio.transcricao|slice:":50"}}
+                  {{doc.transcricao|slice:":50"}}
                 </td>
               </tr>
             {% endfor %}
@@ -44,7 +40,7 @@
       </div>
 
       <div>
-        <a class="btn btn-primary" href="{% url 'audios:upload_audio' %}" role="button">Upload</a>
+        <a class="btn btn-primary" href="{% url 'docs:upload_doc' %}" role="button">Upload</a>
       </div>
     </div>
   </section>
