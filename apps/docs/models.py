@@ -22,3 +22,8 @@ class TextDocument(models.Model):
 
     def __str__(self):
         return self.nome[:50]
+
+
+# class ProcessedText(models.Model):
+
+#     wc = models.FileField('Wordcloud', upload_to='wc/')

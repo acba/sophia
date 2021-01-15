@@ -26,8 +26,16 @@ def detalhe_audio(request, audioid):
 def upload_audio(request):
     if request.method == 'POST':
         form = AudioDocumentForm(request.POST, request.FILES)
+
         if form.is_valid():
-            form.save()
+            f = form.save(commit=False)
+
+            f.size     = f.file.size
+            f.filename = f.file.name
+            f.mime     = request.FILES['file'].content_type
+            f.ext      = f.file.name.split('.')[-1]
+
+            f.save()
             return HttpResponseRedirect(reverse('audios:lista_audios'))
     else:
         form = AudioDocumentForm()
@@ -38,7 +46,7 @@ def transcreve_audio(request, audioid):
     if request.method == 'GET':
         audiodoc = AudioDocument.objects.filter(id=audioid).first()
 
-        stream = vr.read_file(audiodoc.doc.path)
+        stream = vr.read_file(audiodoc.file.path)
         dados = vr.stream_to_text(stream)
 
         audiodoc.transcricao = dados

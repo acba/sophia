@@ -16,6 +16,7 @@
           <thead>
             <tr>
               <th>Descrição</th>
+              <th>Filename</th>
               <th>Processado</th>
               <th>Preview</th>
             </tr>
@@ -26,6 +27,9 @@
               <tr>
                 <td>
                   <a style="color: #007bff;" href='{% url "docs:doc" doc.id  %}'>{{doc.nome}}</a>
+                </td>
+                <td>
+                  {{doc.filename}}
                 </td>
                 <td>
                   {{doc.foi_transcrito}}

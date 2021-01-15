@@ -18,15 +18,37 @@ class Recognizer:
 
 class VoskRecognizer(Recognizer):
 
+
+
     def __init__(self):
 
         if not os.path.exists('apps/utils/speechrecognition/model'):
             print("Please download the model from https://alphacephei.com/vosk/models and unpack as 'model' in the current folder.")
             exit(1)
 
-        self.sample_rate=16000
+        self.threshold = 0.55
+        self.sample_rate = 16000
         self.model = Model('apps/utils/speechrecognition/model')
         self.recognizer = KaldiRecognizer(self.model, self.sample_rate)
+
+
+    def is_valid(self, dado):
+        return True if 'text' in dado and dado['text'] != '' else False
+
+    def filter_low_conf(self, dados):
+        if 'result' not in dados:
+            return dados
+
+        dados_confiaveis = list(filter(lambda x: True if x['conf'] > self.threshold else False, dados['result']))
+        text = ''
+        for dado in dados_confiaveis:
+            text += dado['word'] + ' '
+        text = text.strip()
+
+        return {
+            'result': dados_confiaveis,
+            'text': text
+        }
 
     def stream_to_text(self, stream, complete=False):
         dados = []
@@ -37,17 +59,21 @@ class VoskRecognizer(Recognizer):
                 break
             if self.recognizer.AcceptWaveform(data):
                 resultado = json.loads(self.recognizer.Result())
-                if complete:
-                    dados.append(resultado)
-                else:
-                    dados.append(resultado['text'])
+                resultado = self.filter_low_conf(resultado)
+                if self.is_valid(resultado):
+                    if complete:
+                        dados.append(resultado)
+                    else:
+                        dados.append(resultado['text'])
 
         resultado = json.loads(self.recognizer.FinalResult())
-        if complete:
-            dados.append(resultado)
-        else:
-            dados.append(resultado['text'])
-            dados = ' '.join(dados)
+        resultado = self.filter_low_conf(resultado)
+        if self.is_valid(resultado):
+            if complete:
+                dados.append(resultado)
+            else:
+                dados.append(resultado['text'])
+                dados = ' '.join(dados)
 
         return dados
 

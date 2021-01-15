@@ -6,28 +6,45 @@ import base64
 
 from .textprocessor import NLTK_PT, STOPWORDS_EXTRA
 
-class WordCloud:
+class WordCloudProcessor:
 
-    def __init__(self):
-        pass
+    def __init__(self, texto):
+        self.texto = texto
 
-    def generate_wordcloud(texto):
+    def generate_wordcloud(self):
 
         # lista de stopwords
         stopwords = set(STOPWORDS)
         stopwords.update(NLTK_PT)
         stopwords.update(STOPWORDS_EXTRA)
 
-        wc = WordCloud(stopwords=stopwords, background_color="white", width=1600, height=800, collocations=False)
-        wc.generate(texto)
+        self.wc = WordCloud(stopwords=stopwords, background_color='white', width=1600, height=800, collocations=False)
+        self.wc.generate(self.texto)
 
-        return wc
+        return self.wc
 
-    def wc2base64(wc):
-        plt.axis("off")
-        plt.imshow(wc, interpolation="bilinear")
+    def wc2base64(self):
+        plt.axis('off')
+        plt.imshow(self.wc, interpolation='bilinear')
 
         arquivo = BytesIO()
         plt.savefig(arquivo, format='png', dpi=1200)
         arquivo.seek(0)
         return base64.b64encode(arquivo.getvalue()).decode('utf-8')
+
+
+    def wc2png(self, path):
+        plt.axis('off')
+        plt.imshow(self.wc, interpolation='bilinear')
+        plt.savefig(f'{path}.wordcloud.png', format='png', dpi=1200, bbox_inches='tight')
+
+    # def wc2svg(self, path):
+    #     plt.axis('off')
+    #     plt.imshow(self.wc, interpolation='bilinear')
+
+    #     # arquivo = BytesIO()
+    #     plt.imshow(self.wc, interpolation="bilinear")
+    #     plt.savefig(f'{path}.wordcloud.svg', format='svg')
+    #     # arquivo.seek(0)
+    #     # return str(arquivo.getvalue())
+

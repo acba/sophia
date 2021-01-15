@@ -7,7 +7,8 @@ NLTK_PT = nltk.corpus.stopwords.words('portuguese')
 STOPWORDS_EXTRA = [
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
     'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-    'u', 'v', 'x', 'w', 'y', 'z'
+    'u', 'v', 'x', 'w', 'y', 'z', 'de', 'da', 'das',
+    'do', 'dos', '-', '–'
 ]
 
 def init_nltk():
@@ -17,21 +18,18 @@ def init_nltk():
 
 init_nltk()
 
+def tp_factory(data):
+    # if file == 'application/pdf':
+    return PDFProcessor(data)
+
 class TextProcessor:
     def __init__(self, file):
         self.file = file
-
         if self.get_filetype() == 'application/pdf':
             return PDFProcessor(self.file)
 
     def get_filetype(self):
         return 'application/pdf'
-
-    # def extract(self, path):
-    #     if self.get_filetype(path) == 'application/pdf':
-    #         return extract_pdf(path)
-    #     else:
-    #         print('Formato nao suportado')
 
     def filter_cpf(self):
         regra  = '([0-9]{3}[\.]?[0-9]{3}[\.]?[0-9]{3}[-]?[0-9]{2})'
@@ -59,8 +57,11 @@ class TextProcessor:
         return encontrados
 
 class PDFProcessor(TextProcessor):
-    def __init__(self, file):
-        self.file = file
+    def __init__(self, data):
+        if type(data) == str:
+            self.text = data
+        else:
+            self.file = data
 
     def extract(self):
         texto_completo = ''
@@ -78,7 +79,13 @@ class PDFProcessor(TextProcessor):
         return self.text
 
     def remove_stopwords(self, set=False):
-        tratado = [token.lower() for token in self.text.split() if token not in NLTK_PT and token not in STOPWORDS_EXTRA]
+        # tratado = [token.lower() for token in self.text.split() if token not in NLTK_PT and token not in STOPWORDS_EXTRA]
+        tratado = []
+        for token in self.text.split():
+            token = token.lower()
+            if token not in NLTK_PT and token not in STOPWORDS_EXTRA:
+                tratado.append(token)
+
         if set:
             self.text = ' '.join(tratado)
         return ' '.join(tratado)
@@ -90,7 +97,7 @@ class PDFProcessor(TextProcessor):
         telefones = self.filter_telefone()
         urls      = self.filter_urls()
 
-        texto_tratado = self.remove_stopwords()
-        mais_frequentes = nltk.FreqDist(texto_tratado).most_common(20)
+        tokens = self.remove_stopwords().split(' ')
+        mais_frequentes = nltk.FreqDist(tokens).most_common(20)
 
         return { 'cpfs': cpfs, 'cnpjs': cnpjs, 'emails': emails, 'telefones': telefones, 'urls': urls, 'mais_frequentes': mais_frequentes}

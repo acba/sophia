@@ -4,4 +4,4 @@ from .models import AudioDocument
 class AudioDocumentForm(forms.ModelForm):
     class Meta:
         model = AudioDocument
-        fields = ('nome', 'doc', )
+        fields = ('nome', 'file', )

@@ -2,8 +2,10 @@ from django.db import models
 
 class AudioDocument(models.Model):
     nome     = models.CharField('Nome do Áudio', max_length=255, blank=True)
-    doc      = models.FileField('File', upload_to='audio/')
+    file     = models.FileField('File', upload_to='audio/')
+
     filename = models.CharField('Nome do Arquivo', max_length=255, blank=True)
+    size     = models.BigIntegerField('Tamanho Arquivo', null=True)
     mime     = models.CharField('MIME Type', max_length=255, blank=True)
     ext      = models.CharField('Extensão', max_length=255, blank=True)
 
@@ -19,13 +21,3 @@ class AudioDocument(models.Model):
 
     def __str__(self):
         return self.nome[:50]
-
-class TextoTranscrito(models.Model):
-    transcricao    = models.TextField('Texto Transcrito', default=None, null=True)
-    class Meta:
-        verbose_name        = "Texto Transcrito"
-        verbose_name_plural = "Textos Transcritos"
-        ordering = ('transcricao',)
-
-    def __str__(self):
-        return self.transcricao[:50]
