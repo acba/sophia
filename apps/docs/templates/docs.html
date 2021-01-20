@@ -32,10 +32,10 @@
                   {{doc.filename}}
                 </td>
                 <td>
-                  {{doc.foi_transcrito}}
+                  {{doc.foi_processado}}
                 </td>
                 <td>
-                  {{doc.transcricao|slice:":50"}}
+                  {{doc.processedtext.texto|slice:":50"}}
                 </td>
               </tr>
             {% endfor %}

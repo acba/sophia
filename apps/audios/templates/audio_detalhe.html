@@ -9,30 +9,67 @@
 
       <div class="card-body">
         <div class="card-title">
-          <h4>Áudio : {{audiodoc.nome}}</h4>
+          <h4>Descrição : {{audiodoc.nome}}</h4>
+          <h5>Processador: {{audiodoc.processedaudio.processor}}</h5>
         </div>
 
         <div>
-          <audio src="{{audiodoc.file.url}}" controls></audio>
+          <h5>Áudio: {{audiodoc.filename}}</h5>
+          <audio id='audioel' src="{{audiodoc.file.url}}" controls></audio>
         </div>
 
-        {% if audiodoc.foi_transcrito %}
+        {% if audiodoc.foi_processado %}
           <div>
-            <h5>Transcrição</h5>
-            <div>{{audiodoc.transcricao}}</div>
 
-            <div>
-              <a class="btn btn-primary" href="{% url 'audios:transcreve_audio' audiodoc.id %}" role="button">Processar texto</a>
+            <div style="text-align: center;">
+              <h5>Wordcloud</h5>
+              <img style="width: auto; max-height: 480px;" src="{{audiodoc.processedaudio.file_wc.url}}" alt="">
+            </div>
+
+            <div class='my-2'>
+              <h5>Termos mais frequentes</h5>
+              <div>
+                {% for dado in audiodoc.processedaudio.mais_frequentes.all %}
+                  <span class='hvr-fade mx-1 p-2'>{{dado.termo}} | {{dado.qtd}}</span>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div style='text-align: justify;' class='my-2'>
+              <h5>Transcrição</h5>
+              <div style='width: 100%; height: 200px; overflow-y: scroll; border: 1px solid rgba(3,10,15,0.3);' class='p-2'>
+                {% for dado in audiodoc.processedaudio.trechos.all %}
+                  <span onclick='play({{dado.start}})' class='hvr-fade p-1' start='{{dado.start}}' end='{{dado.end}}'>{{dado.text}} </span>
+                {% endfor %}
+                <!-- {{audiodoc.processedaudio.texto}} -->
+              </div>
             </div>
           </div>
         {% else %}
           <div>
-            <a class="btn btn-primary" href="{% url 'audios:transcreve_audio' audiodoc.id %}" role="button">Transcrever</a>
+            <a class="btn btn-primary" href="{% url 'audios:processa_audio' audiodoc.id 'vr' %}" role="button">Processar Audio - Vosk</a>
+            <a class="btn btn-primary" href="{% url 'audios:processa_audio' audiodoc.id 'gr' %}" role="button">Processar Audio - Google</a>
           </div>
         {%endif%}
       </div>
     </div>
   </section>
+
+  <script>
+
+    function play(start) {
+      var audioel = document.getElementById('audioel');
+      // audioel.oncanplay = function() {
+      //   console.log('start', start, typeof start)
+      // };
+      audioel.currentTime = start;
+      audioel.play()
+
+      // console.log('audioel', audioel)
+      // audioel.currentTime = 5;
+      // audioel.play()
+    }
+  </script>
 
 {% endblock %}
 

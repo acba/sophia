@@ -16,9 +16,11 @@
           <thead>
             <tr>
               <th>Descrição</th>
+              <th>Filename</th>
               <th>Conteúdo</th>
               <th>Transcrito</th>
               <th>Preview</th>
+              <th>Remover</th>
             </tr>
           </thead>
 
@@ -29,13 +31,21 @@
                   <a style="color: #007bff;" href='{% url "audios:audio" audio.id  %}'>{{audio.nome}}</a>
                 </td>
                 <td>
+                  {{audio.filename}}
+                </td>
+                <td>
                   <audio src="{{audio.file.url}}" controls></audio>
                 </td>
                 <td>
-                  {{audio.foi_transcrito}}
+                  {{audio.foi_processado}}
                 </td>
                 <td>
-                  {{audio.transcricao|slice:":50"}}
+                  {{audio.processedaudio.trechos.first.text|slice:":50"}}
+                </td>
+                <td>
+                  <a style="color: #007bff;" href='{% url "audios:remove_audio" audio.id  %}'>
+                    <i class="fa fa-times hvr-grow" aria-hidden="true"></i>
+                  </a>
                 </td>
               </tr>
             {% endfor %}

@@ -18,22 +18,26 @@ class Recognizer:
 
 class VoskRecognizer(Recognizer):
 
-
-
     def __init__(self):
 
         if not os.path.exists('apps/utils/speechrecognition/model'):
             print("Please download the model from https://alphacephei.com/vosk/models and unpack as 'model' in the current folder.")
             exit(1)
 
-        self.threshold = 0.55
+        self.threshold = 0.0
         self.sample_rate = 16000
         self.model = Model('apps/utils/speechrecognition/model')
         self.recognizer = KaldiRecognizer(self.model, self.sample_rate)
 
-
     def is_valid(self, dado):
         return True if 'text' in dado and dado['text'] != '' else False
+
+
+    def cria_el(self, resultado):
+        start = resultado['result'][0]['start']
+        end   = resultado['result'][len(resultado['result'])-1]['end']
+        return {'start': start, 'end': end, 'text': resultado['text']}
+
 
     def filter_low_conf(self, dados):
         if 'result' not in dados:
@@ -50,7 +54,15 @@ class VoskRecognizer(Recognizer):
             'text': text
         }
 
-    def stream_to_text(self, stream, complete=False):
+    def stream_to_text(self, stream):
+        dados = self.stream_to_vtt(self.recognizer, stream)
+        texto = ''
+        for d in dados:
+            texto += d['text'] + ' '
+
+        return texto.strip()
+
+    def stream_to_vtt(self, stream):
         dados = []
 
         while True:
@@ -61,21 +73,18 @@ class VoskRecognizer(Recognizer):
                 resultado = json.loads(self.recognizer.Result())
                 resultado = self.filter_low_conf(resultado)
                 if self.is_valid(resultado):
-                    if complete:
-                        dados.append(resultado)
-                    else:
-                        dados.append(resultado['text'])
+                    dados += [self.cria_el(resultado)]
 
         resultado = json.loads(self.recognizer.FinalResult())
         resultado = self.filter_low_conf(resultado)
         if self.is_valid(resultado):
-            if complete:
-                dados.append(resultado)
-            else:
-                dados.append(resultado['text'])
-                dados = ' '.join(dados)
+            dados += [self.cria_el(resultado)]
 
         return dados
+
+    def file_to_vtt(self, path):
+        stream = self.read_file(path)
+        return self.stream_to_vtt(stream)
 
     def mic_to_text(self):
         p = pyaudio.PyAudio()
@@ -93,7 +102,6 @@ class VoskRecognizer(Recognizer):
 
                 if parcial != '':
                     texto_transcrito.append(parcial)
-                    print(parcial)
 
                 if parcial == 'fechar' or parcial == 'fim':
                     break
@@ -125,17 +133,24 @@ class SRRecognizer(Recognizer):
         subprocess.call(params)
         return True
 
-    def stream_to_text(self, path):
-        dados = ''
+    def file_to_vtt(self, path):
+        self.to_wav(path)
 
-        with sr.AudioFile(path) as source:
+        pathwav = path + '.wav'
+        texto = ''
+
+        with sr.AudioFile(pathwav) as source:
             audio = self.recognizer.record(source)
 
             try:
-                dados = self.recognizer.recognize_google(audio, language='pt-br')
+                texto = self.recognizer.recognize_google(audio, language='pt-br')
             except sr.UnknownValueError:
-                dados = 'Não reconhecido'
+                texto = ''
 
-        return dados
+        return [{
+        'start': 0,
+        'text': texto
+    }]
 
 vr = VoskRecognizer()
+gr = SRRecognizer()

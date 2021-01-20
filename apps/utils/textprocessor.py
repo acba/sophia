@@ -2,6 +2,7 @@ import pdfplumber
 import re
 import nltk
 from nltk.tokenize import RegexpTokenizer
+from validate_docbr import CPF, CNPJ
 
 NLTK_PT = nltk.corpus.stopwords.words('portuguese')
 STOPWORDS_EXTRA = [
@@ -15,6 +16,13 @@ def init_nltk():
     nltk.download('rslp')
     nltk.download('stopwords')
     nltk.download('omw')
+
+def formata_dado(dado, mask):
+    if len(dado) != len(re.sub(r'[^#]', '', mask)):
+        return dado
+
+    _mask = mask.replace('#', '{}')
+    return _mask.format(*f'{dado}')
 
 init_nltk()
 
@@ -34,11 +42,23 @@ class TextProcessor:
     def filter_cpf(self):
         regra  = '([0-9]{3}[\.]?[0-9]{3}[\.]?[0-9]{3}[-]?[0-9]{2})'
         encontrados = re.findall(regra, self.text)
+        encontrados = list(map(lambda x: re.sub(r'\D', '', x), encontrados))
+
+        test = CPF()
+        encontrados = list(filter(lambda x: test.validate(x), encontrados))
+        encontrados = list(map(lambda x: formata_dado(x, '###.###.###-##'), encontrados))
+
         return encontrados
 
     def filter_cnpj(self):
         regra = '([0-9]{2}\.?[0-9]{3}\.?[0-9]{3}\/?[0-9]{4}\-?[0-9]{2})'
         encontrados = re.findall(regra, self.text)
+        encontrados = list(map(lambda x: re.sub(r'\D', '', x), encontrados))
+
+        test = CNPJ()
+        encontrados = list(filter(lambda x: test.validate(x), encontrados))
+        encontrados = list(map(lambda x: formata_dado(x, '##.###.###/####-##'), encontrados))
+
         return encontrados
 
     def filter_email(self):

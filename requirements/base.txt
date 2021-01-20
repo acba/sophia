@@ -14,7 +14,7 @@ djangorestframework==3.12.2  # https://github.com/encode/django-rest-framework
 django-cors-headers==3.6.0 # https://github.com/adamchainz/django-cors-headers
 
 # SpeechRecognition
-vosk==0.3.15
+vosk==0.3.17
 SpeechRecognition==3.8.1
 pyaudio==0.2.11
 ipython==7.19.0
@@ -25,3 +25,4 @@ wordcloud==1.8.1
 pdfplumber==0.5.24
 nltk==3.5
 matplotlib==3.3.3
+validate-docbr==1.8.2

@@ -12,30 +12,64 @@
           <h4>Documento : {{textdoc.nome}}</h4>
         </div>
 
-        {% if textdoc.foi_transcrito %}
+        {% if textdoc.foi_processado %}
           <div>
-            <!-- {% if wc %} -->
-            <!-- {{wc|safe}} -->
-            <!-- {% endif %} -->
 
-            <div>
+            <div style="text-align: center;">
               <h5>Wordcloud</h5>
-              <img style="width: 100%;" src="{{textdoc.file.url}}.wordcloud.png" alt="">
+              <img style="width: auto; max-height: 480px;" src="{{textdoc.processedtext.file_wc.url}}" alt="">
             </div>
 
-            <div style='text-align: justify;'>
+            <div class='my-2'>
+              <h5>Entidades</h5>
+              <div>
+                <div>
+                  {% for entidade in textdoc.processedtext.cpfs.all %}
+                    CPF: {{entidade.cpf}} <br/>
+                  {% endfor %}
+                </div>
+                <div>
+                  {% for entidade in textdoc.processedtext.cnpjs.all %}
+                    CNPJ: {{entidade.cnpj}} <br/>
+                  {% endfor %}
+                </div>
+                <div>
+                  {% for entidade in textdoc.processedtext.urls.all %}
+                    URL: {{entidade.url}} <br/>
+                  {% endfor %}
+                </div>
+                <div>
+                  {% for entidade in textdoc.processedtext.emails.all %}
+                    Email: {{entidade.email}} <br/>
+                  {% endfor %}
+                </div>
+                <div>
+                  {% for entidade in textdoc.processedtext.telefones.all %}
+                    Telefone: {{entidade.telefone}} <br/>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class='my-2'>
+              <h5>Termos mais frequentes</h5>
+              <div>
+                {% for dado in textdoc.processedtext.mais_frequentes.all %}
+                  <span class='hvr-fade mx-1 p-2'>{{dado.termo}} | {{dado.qtd}}</span>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div style='text-align: justify;' class='my-2'>
               <h5>Transcrição</h5>
-              {{textdoc.transcricao}}
+              <div style='width: 100%; height: 200px; overflow-y: scroll; border: 1px solid rgba(3,10,15,0.3);' class='p-2'>
+                {{textdoc.processedtext.texto}}
+              </div>
             </div>
-
-            <div>
-              <a class="btn btn-primary" href="{% url 'docs:processa_doc' textdoc.id %}" role="button">Processar</a>
-            </div>
-
           </div>
         {% else %}
           <div>
-            <a class="btn btn-primary" href="{% url 'docs:transcreve_doc' textdoc.id %}" role="button">Transcrever Documento</a>
+            <a class="btn btn-primary" href="{% url 'docs:processa_doc' textdoc.id %}" role="button">Processar Documento</a>
           </div>
         {%endif%}
       </div>
