@@ -7,7 +7,7 @@ from .forms import AudioDocumentForm
 from .models import AudioDocument, ProcessedAudio, TermoFreqData, LegendaTrecho
 
 from apps.utils.wordcloud import WordCloudProcessor
-from apps.utils.textprocessor import tp_factory
+from apps.utils.textprocessor import TextProcessor
 from apps.utils.recognizer import vr, gr
 
 def lista_audios(request):
@@ -62,7 +62,8 @@ def processa_audio(request, audioid, processor):
             texto += t['text'] + ' '
         texto = texto.strip()
 
-        tp = tp_factory(texto)
+        tp = TextProcessor(texto)
+        tp.clean()
         info = tp.info()
 
         # Cria ProcessedAudio

@@ -17,8 +17,10 @@
             <tr>
               <th>Descrição</th>
               <th>Filename</th>
+              <th>MIME</th>
               <th>Processado</th>
               <th>Preview</th>
+              <th>Remover</th>
             </tr>
           </thead>
 
@@ -32,10 +34,18 @@
                   {{doc.filename}}
                 </td>
                 <td>
+                  {{doc.mime}}
+                </td>
+                <td>
                   {{doc.foi_processado}}
                 </td>
                 <td>
                   {{doc.processedtext.texto|slice:":50"}}
+                </td>
+                <td>
+                  <a style="color: #007bff;" href='{% url "docs:remove_doc" doc.id  %}'>
+                    <i class="fa fa-times hvr-grow" aria-hidden="true"></i>
+                  </a>
                 </td>
               </tr>
             {% endfor %}

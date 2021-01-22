@@ -35,6 +35,8 @@ RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile \
 RUN apt-get update \
     # Pillow dependencies
     && apt-get install -y libjpeg-dev zlib1g-dev libfreetype6-dev liblcms2-dev libtiff-dev tk-dev tcl-dev \
+    # TextProcessor dependencies
+    && apt-get install -y antiword tesseract-ocr ffmpeg \
     # CFFI dependencies
     && apt-get install -y libffi-dev \
     # Translations dependencies

@@ -18,6 +18,10 @@ def detalhe_doc(request, docid):
     textdoc = TextDocument.objects.filter(id=docid).first()
     return render(request, 'docs_detalhe.html', { 'textdoc': textdoc })
 
+def remove_doc(request, docid):
+    TextDocument.objects.filter(id=docid).delete()
+    return HttpResponseRedirect(reverse('docs:lista_docs'))
+
 def upload_doc(request):
     if request.method == 'POST':
         form = TextDocumentForm(request.POST, request.FILES)
@@ -43,19 +47,20 @@ def processa_doc(request, docid):
     if request.method == 'GET':
         textdoc = TextDocument.objects.filter(id=docid).first()
 
-        tp = tp_factory(textdoc.file)
+        tp = tp_factory(textdoc.file, textdoc.mime)
         texto = tp.extract()
         texto = tp.clean()
+        info  = tp.info()
 
-        info = tp.info()
+        # Cria ProcessedText
+        pt = ProcessedText.objects.create(texto=texto, textdoc=textdoc)
 
+        # Cria o arquivo WordCloud
         wp = WordCloudProcessor(tp.remove_stopwords())
         wp.generate_wordcloud()
         wp.wc2png(textdoc.file.path)
-
-        pt = ProcessedText.objects.create(texto=texto, textdoc=textdoc)
         django_file = File(open(f'{textdoc.file.path}.wordcloud.png','rb'))
-        pt.file_wc.save('new', django_file)
+        pt.file_wc.save(f'{textdoc.filename}.wordcloud.png', django_file)
         pt.save()
 
         # Salva os dados encontrados no texto processado
@@ -79,6 +84,7 @@ def processa_doc(request, docid):
             c = TelefoneData.objects.create(telefone=telefone, pdoc=pt)
             c.save()
 
+        # Cria Informacoes de dados mais frequentes
         for dado in info['mais_frequentes']:
             c = TermoFreqData.objects.create(termo=dado[0], qtd=dado[1], pdoc=pt)
             c.save()

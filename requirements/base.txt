@@ -26,3 +26,5 @@ pdfplumber==0.5.24
 nltk==3.5
 matplotlib==3.3.3
 validate-docbr==1.8.2
+python-docx==0.8.10
+-e git://github.com/acba/textract.git#egg=textract
