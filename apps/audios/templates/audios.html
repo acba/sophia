@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_table from django_tables2 %}
 
 {% block heading %}{% endblock heading %}
 
@@ -12,45 +13,7 @@
           <h4>Meus áudios</h4>
         </div>
 
-        <table class="display table table-striper table-bordered">
-          <thead>
-            <tr>
-              <th>Descrição</th>
-              <th>Filename</th>
-              <th>Conteúdo</th>
-              <th>Transcrito</th>
-              <th>Preview</th>
-              <th>Remover</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {% for audio in meus_audios %}
-              <tr>
-                <td>
-                  <a style="color: #007bff;" href='{% url "audios:audio" audio.id  %}'>{{audio.nome}}</a>
-                </td>
-                <td>
-                  {{audio.filename}}
-                </td>
-                <td>
-                  <audio src="{{audio.file.url}}" controls></audio>
-                </td>
-                <td>
-                  {{audio.foi_processado}}
-                </td>
-                <td>
-                  {{audio.processedaudio.trechos.first.text|slice:":50"}}
-                </td>
-                <td>
-                  <a style="color: #007bff;" href='{% url "audios:remove_audio" audio.id  %}'>
-                    <i class="fa fa-times hvr-grow" aria-hidden="true"></i>
-                  </a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        {% render_table table %}
       </div>
 
       <div>

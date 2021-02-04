@@ -8,11 +8,16 @@ from .models import TextDocument, ProcessedText, CPFData, CNPJData, EmailData, U
 
 from apps.utils.textprocessor import tp_factory
 from apps.utils.wordcloud import WordCloudProcessor
+from apps.docs.tables import TextDocumentTable
+
 
 
 def lista_docs(request):
     meus_docs = TextDocument.objects.filter(user__id=request.user.id)
-    return render(request, 'docs.html', { 'meus_docs': meus_docs })
+    table = TextDocumentTable(meus_docs)
+    table.paginate(page=request.GET.get('page', 1), per_page=10)
+
+    return render(request, 'docs.html', { 'meus_docs': meus_docs, 'table': table })
 
 def detalhe_doc(request, docid):
     textdoc = TextDocument.objects.filter(id=docid).first()

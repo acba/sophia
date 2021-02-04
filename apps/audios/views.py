@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.core.files import File
 
 from .forms import AudioDocumentForm
+from .tables import AudioDocumentTable
 from .models import AudioDocument, ProcessedAudio, TermoFreqData, LegendaTrecho
 
 from apps.utils.wordcloud import WordCloudProcessor
@@ -12,7 +13,10 @@ from apps.utils.recognizer import vr, gr
 
 def lista_audios(request):
     meus_audios = AudioDocument.objects.all()
-    return render(request, 'audios.html', { 'meus_audios': meus_audios })
+    table = AudioDocumentTable(meus_audios)
+    table.paginate(page=request.GET.get('page', 1), per_page=10)
+
+    return render(request, 'audios.html', { 'meus_audios': meus_audios, 'table': table })
 
 def detalhe_audio(request, audioid):
     audiodoc = AudioDocument.objects.filter(id=audioid).first()

@@ -1,8 +1,8 @@
 from django.db import models
 
 class AudioDocument(models.Model):
-    nome = models.CharField('Nome do Áudio', max_length=255, blank=True)
-    file = models.FileField('File', upload_to='audio/')
+    nome = models.CharField('Descrição do Áudio', max_length=255, blank=True)
+    file = models.FileField('Arquivo', upload_to='audio/')
     user = models.ForeignKey('users.User', related_name="audiodocs", on_delete=models.CASCADE, null=False, default=None)
 
     filename = models.CharField('Nome do Arquivo', max_length=255, blank=True)
@@ -38,7 +38,15 @@ class ProcessedAudio(models.Model):
         ordering = ('data_criacao',)
 
     def __str__(self):
-        return self.texto[:200]
+        print(self.trechos.first())
+        print(self.trechos.first().text)
+        # trecho = self.trechos.first().text
+        # trechos = self.trechos.values_list('text', flat=True)
+        # for trecho in trechos:
+            # print('#  ', trecho)
+
+        # texto_completo = ' '.join(list(self.trechos.all()))
+        return self.trechos.first().text[:200]
 
 class LegendaTrecho(models.Model):
     pdoc = models.ForeignKey(ProcessedAudio, related_name="trechos", on_delete=models.CASCADE, null=False, default=None)
@@ -47,9 +55,15 @@ class LegendaTrecho(models.Model):
     end   = models.FloatField('Fim Trecho', null=True)
     text  = models.TextField('Texto', default=None, null=True)
 
+    def __str__(self):
+        return self.text[:200]
+
 class TermoFreqData(models.Model):
     pdoc = models.ForeignKey(ProcessedAudio, related_name="mais_frequentes", on_delete=models.CASCADE, null=False, default=None)
 
     termo = models.CharField('Termo', max_length=255, blank=True)
     qtd   = models.IntegerField('Qtd', blank=True)
+
+    def __str__(self):
+        return f'{self.termo}: {self.qtd}'
 

@@ -5,8 +5,8 @@ class TextDocument(models.Model):
         Classe que representa o objeto TextDocument
     """
 
-    nome = models.CharField('Nome do Documento', max_length=255, blank=True)
-    file = models.FileField('File', upload_to='text/')
+    nome = models.CharField('Descrição do Documento', max_length=255, blank=True)
+    file = models.FileField('Arquivo', upload_to='text/')
     user = models.ForeignKey('users.User', related_name="textdocs", on_delete=models.CASCADE, null=False, default=None)
 
     filename = models.CharField('Nome do Arquivo', max_length=255, blank=True)

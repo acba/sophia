@@ -1,7 +1,5 @@
-
-  {% load static i18n %}
-  {% load static %}
-
+{% load static i18n %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -20,6 +18,8 @@
     <link href="{% static 'css/bootstrap/v4.2.1/bootstrap.min.css' %}" rel="stylesheet">
     <!-- Material Design Bootstrap -->
     <link href="{% static 'css/mdb/v4.7.0/mdb.min.css' %}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="{% static 'css/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
     <!-- Your custom styles (optional) -->
     <link href="{% static 'css/base/style.css' %}" rel="stylesheet">
     <!-- Your custom styles (optional) -->
@@ -34,9 +34,6 @@
       var x = `{{js_vars | safe}}`;
       let JS_VARS = (x) ? JSON.parse(x) : {};
     </script>
-
-
-
 </head>
 
 <body class="fixed-sn white-skin">
@@ -59,14 +56,14 @@
         <!--/. Logo -->
 
         <!--Search Form-->
-        <!-- <li>
+        <li>
           <form class="search-form" role="search">
             <div class="form-group md-form mt-0 pt-1 waves-light">
               <input type="text" class="form-control" placeholder="Search">
             </div>
           </form>
         </li> -->
-        <!--/.Search Form-->
+        <!--/.Search Form
 
         <!-- Side navigation links -->
         <li>
@@ -85,8 +82,6 @@
               <a href="{% url 'docs:lista_docs' %}" class="collapsible-header waves-effect"><i class="fas fa-file"></i> Documentos</a>
             </li>
             {% endblock sidebar_items %}
-
-
           </ul>
         </li>
         <!--/. Side navigation links -->
@@ -196,6 +191,9 @@
     <script type="text/javascript" src="{% static 'js/bootstrap/v4.2.1/bootstrap.min.js' %}"></script>
     <!-- MDB core JavaScript -->
     <script type="text/javascript" src="{% static 'js/mdb/v4.7.0/mdb.min.js' %}"></script>
+    <!-- Datatable JavaScript -->
+    <script type="text/javascript" src="{% static 'js/datatables/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/datatables/dataTables.bootstrap4.min.js' %}"></script>
     <!-- Initializations -->
     <!-- <script type="text/javascript">
       // Animations initialization

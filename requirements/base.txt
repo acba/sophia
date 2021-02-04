@@ -8,6 +8,8 @@ Django==3.0.10 # https://www.djangoproject.com/
 django-environ==0.4.5  # https://github.com/joke2k/django-environ
 django-crispy-forms==1.10.0 # https://github.com/django-crispy-forms/django-crispy-forms
 django-allauth==0.44.0  # https://github.com/pennersr/django-allauth
+django-datatables-view==1.19.1
+django-tables2==2.3.4
 
 # Django REST Framework
 djangorestframework==3.12.2  # https://github.com/encode/django-rest-framework

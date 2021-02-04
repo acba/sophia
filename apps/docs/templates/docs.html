@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_table from django_tables2 %}
 
 {% block heading %}{% endblock heading %}
 
@@ -12,45 +13,7 @@
           <h4>Meus documentos</h4>
         </div>
 
-        <table class="display table table-striper table-bordered">
-          <thead>
-            <tr>
-              <th>Descrição</th>
-              <th>Filename</th>
-              <th>MIME</th>
-              <th>Processado</th>
-              <th>Preview</th>
-              <th>Remover</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {% for doc in meus_docs %}
-              <tr>
-                <td>
-                  <a style="color: #007bff;" href='{% url "docs:doc" doc.id  %}'>{{doc.nome}}</a>
-                </td>
-                <td>
-                  {{doc.filename}}
-                </td>
-                <td>
-                  {{doc.mime}}
-                </td>
-                <td>
-                  {{doc.foi_processado}}
-                </td>
-                <td>
-                  {{doc.processedtext.texto|slice:":50"}}
-                </td>
-                <td>
-                  <a style="color: #007bff;" href='{% url "docs:remove_doc" doc.id  %}'>
-                    <i class="fa fa-times hvr-grow" aria-hidden="true"></i>
-                  </a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        {% render_table table %}
       </div>
 
       <div>

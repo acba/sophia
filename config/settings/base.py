@@ -57,7 +57,8 @@ THIRD_PARTY_APPS = [
     'allauth.socialaccount',
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders'
+    'corsheaders',
+    'django_tables2',
 ]
 LOCAL_APPS = [
     'apps.sophia.users.apps.UsersAppConfig',
