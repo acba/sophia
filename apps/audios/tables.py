@@ -1,4 +1,7 @@
 from django.utils.html import format_html
+from django.urls import reverse
+from django.middleware.csrf import get_token
+
 import django_tables2 as tables
 from django_tables2.utils import A
 
@@ -7,7 +10,9 @@ from .models import AudioDocument
 
 class AudioDocumentTable(tables.Table):
     class Meta:
+        orderable     = True
         template_name = 'django_tables2/bootstrap4.html'
+        # attrs = {'class': 'table table-striper table-bordered'}
 
     nome           = tables.Column(verbose_name='Descrição', linkify={
         "viewname": "audios:audio",
@@ -19,13 +24,13 @@ class AudioDocumentTable(tables.Table):
     foi_processado = tables.BooleanColumn(verbose_name='Transcrito')
     processor      = tables.Column(accessor='processedaudio__processor')
     preview        = tables.Column(accessor='processedaudio', verbose_name='Preview')
-    remover        = tables.Column(accessor='nome', verbose_name='Remover', linkify={
-        "viewname": "audios:remove_audio",
-        "args": [tables.A("pk")]
-    })
+    remover        = tables.Column(accessor='nome', verbose_name='Remover')
 
     def render_nome(self, value, record):
         return format_html(f'<span style="color: #007bff;" class="hvr-grow">{record.nome}</span>')
+
+    def render_filename(self, value, record):
+        return format_html(f'<a href="{record.file.url}" style="color: #007bff;" class="hvr-grow">{record.filename}</span>')
 
     def render_size(self, value, record):
         return format_html(f'{sizeof_fmt(value)}')
@@ -37,4 +42,12 @@ class AudioDocumentTable(tables.Table):
         return format_html(f'<span class="font-italic">{value}</span>')
 
     def render_remover(self, value, record):
-        return format_html(f'<i style="color: #007bff;" class="fa fa-times hvr-grow" aria-hidden="true"></i>')
+        return format_html(f'''
+            <form action="{reverse('audios:remove_audio')}" method="get">
+                <input type="hidden" name="id" value="{record.id}">
+                <button class="btn btn-primary" style="padding: 1px 5px 1px 5px;" type="submit">
+                    <i class="fa fa-times"></i>
+                </button>
+            </form>
+        ''' )
+        # return format_html(f'<i style="color: #007bff;" class="fa fa-times hvr-grow" aria-hidden="true"></i>')

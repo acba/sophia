@@ -7,24 +7,33 @@ from .forms import AudioDocumentForm
 from .tables import AudioDocumentTable
 from .models import AudioDocument, ProcessedAudio, TermoFreqData, LegendaTrecho
 
+from apps.utils import silent_remove
 from apps.utils.wordcloud import WordCloudProcessor
 from apps.utils.textprocessor import TextProcessor
 from apps.utils.recognizer import vr, gr
 
 def lista_audios(request):
-    meus_audios = AudioDocument.objects.all()
+    meus_audios = AudioDocument.objects.filter(user__id=request.user.id)
     table = AudioDocumentTable(meus_audios)
     table.paginate(page=request.GET.get('page', 1), per_page=10)
 
     return render(request, 'audios.html', { 'meus_audios': meus_audios, 'table': table })
 
 def detalhe_audio(request, audioid):
-    audiodoc = AudioDocument.objects.filter(id=audioid).first()
+    audiodoc = AudioDocument.objects.filter(user__id=request.user.id, id=audioid).first()
     return render(request, 'audio_detalhe.html', { 'audiodoc': audiodoc })
 
-def remove_audio(request, audioid):
-    AudioDocument.objects.filter(id=audioid).delete()
-    return HttpResponseRedirect(reverse('audios:lista_audios'))
+def remove_audio(request):
+    if request.method == 'POST' and 'id' in request.POST:
+        audioid = request.POST['id']
+        AudioDocument.objects.filter(user__id=request.user.id, id=audioid).delete()
+        return HttpResponseRedirect(reverse('audios:lista_audios'))
+    elif request.method == 'GET' and 'id' in request.GET:
+        audioid = request.GET['id']
+        AudioDocument.objects.filter(user__id=request.user.id, id=audioid).delete()
+        return HttpResponseRedirect(reverse('audios:lista_audios'))
+    else:
+        return HttpResponseRedirect(reverse('audios:lista_audios'))
 
 def upload_audio(request):
     if request.method == 'POST':
@@ -80,6 +89,9 @@ def processa_audio(request, audioid, processor):
         django_file = File(open(f'{audiodoc.file.path}.wordcloud.png','rb'))
         pa.file_wc.save(f'{audiodoc.filename}.wordcloud.png', django_file)
         pa.save()
+
+        # Exclui arquito temporario criado
+        silent_remove(f'{audiodoc.file.path}.wordcloud.png')
 
         # Cria Trechos de Legenda
         for trecho in lista_vtt:

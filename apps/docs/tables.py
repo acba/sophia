@@ -8,8 +8,8 @@ from .models import TextDocument
 class TextDocumentTable(tables.Table):
     class Meta:
         orderable     = True
-        template_name = 'django_tables2/bootstrap4.html'
-        attrs = {'class': 'table table-striper table-bordered'}
+        template_name = 'django_tables2/bootstrap-responsive.html'
+        # attrs = {'class': 'table table-striper table-bordered'}
 
     nome           = tables.Column(verbose_name='Descrição', linkify={
         "viewname": "docs:doc",
@@ -28,6 +28,9 @@ class TextDocumentTable(tables.Table):
 
     def render_nome(self, value, record):
         return format_html(f'<span style="color: #007bff;" class="hvr-grow">{record.nome}</span>')
+
+    def render_filename(self, value, record):
+        return format_html(f'<a href="{record.file.url}" style="color: #007bff;" class="hvr-grow">{record.filename}</span>')
 
     def render_size(self, value, record):
         return format_html(f'{sizeof_fmt(value)}')

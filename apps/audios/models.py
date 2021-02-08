@@ -1,8 +1,14 @@
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'audios/user_{0}/{1}'.format(instance.user.id, filename)
 
 class AudioDocument(models.Model):
     nome = models.CharField('Descrição do Áudio', max_length=255, blank=True)
-    file = models.FileField('Arquivo', upload_to='audio/')
+    file = models.FileField('Arquivo', upload_to=user_directory_path)
     user = models.ForeignKey('users.User', related_name="audiodocs", on_delete=models.CASCADE, null=False, default=None)
 
     filename = models.CharField('Nome do Arquivo', max_length=255, blank=True)
@@ -38,14 +44,6 @@ class ProcessedAudio(models.Model):
         ordering = ('data_criacao',)
 
     def __str__(self):
-        print(self.trechos.first())
-        print(self.trechos.first().text)
-        # trecho = self.trechos.first().text
-        # trechos = self.trechos.values_list('text', flat=True)
-        # for trecho in trechos:
-            # print('#  ', trecho)
-
-        # texto_completo = ' '.join(list(self.trechos.all()))
         return self.trechos.first().text[:200]
 
 class LegendaTrecho(models.Model):
@@ -67,3 +65,27 @@ class TermoFreqData(models.Model):
     def __str__(self):
         return f'{self.termo}: {self.qtd}'
 
+
+# Whenever ANY model is deleted, if it has a file field on it, delete the associated file too
+@receiver(post_delete, sender=AudioDocument)
+def delete_files_when_row_deleted_from_db(sender, instance, **kwargs):
+    for field in sender._meta.concrete_fields:
+        if isinstance(field, models.FileField):
+            instance_file_field = getattr(instance, field.name)
+            delete_file_if_unused(sender, instance, field, instance_file_field)
+
+# Whenever ANY model is deleted, if it has a file field on it, delete the associated file too
+@receiver(post_delete, sender=ProcessedAudio)
+def delete_files_when_row_deleted_from_db(sender, instance, **kwargs):
+    for field in sender._meta.concrete_fields:
+        if isinstance(field, models.FileField):
+            instance_file_field = getattr(instance,field.name)
+            delete_file_if_unused(sender,instance,field,instance_file_field)
+
+# Only delete the file if no other instances of that model are using it
+def delete_file_if_unused(model,instance,field,instance_file_field):
+    dynamic_field = {}
+    dynamic_field[field.name] = instance_file_field.name
+    other_refs_exist = model.objects.filter(**dynamic_field).exclude(pk=instance.pk).exists()
+    if not other_refs_exist:
+        instance_file_field.delete(False)

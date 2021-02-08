@@ -8,6 +8,7 @@ from .models import TextDocument, ProcessedText, CPFData, CNPJData, EmailData, U
 
 from apps.utils.textprocessor import tp_factory
 from apps.utils.wordcloud import WordCloudProcessor
+from apps.utils import silent_remove
 from apps.docs.tables import TextDocumentTable
 
 
@@ -67,6 +68,9 @@ def processa_doc(request, docid):
         django_file = File(open(f'{textdoc.file.path}.wordcloud.png','rb'))
         pt.file_wc.save(f'{textdoc.filename}.wordcloud.png', django_file)
         pt.save()
+
+        # Exclui arquito temporario criado
+        silent_remove(f'{textdoc.file.path}.wordcloud.png')
 
         # Salva os dados encontrados no texto processado
         for cpf in info['cpfs']:
