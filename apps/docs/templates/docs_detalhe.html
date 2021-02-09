@@ -51,8 +51,10 @@
             </div>
 
             <div class="col-xl-6  col-lg-6  col-sm-12">
-              {% if textdoc.ext == 'jpg' or textdoc.ext == 'jpeg' %}
+              {% if textdoc.ext == 'jpg' or textdoc.ext == 'jpeg' or textdoc.ext == 'png'  %}
                 <img src="{{textdoc.file.url}}" style="width: auto; max-height: 240px;" alt='Documento'></img>
+              {% elif textdoc.ext == 'pdf' %}
+                <embed src="{{textdoc.file.url}}" type="application/pdf" width="100%" height="240px"/>
               {% else %}
                 <a href="{{textdoc.file.url}}">URL</a>
               {% endif %}

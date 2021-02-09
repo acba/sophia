@@ -206,7 +206,7 @@ MEDIA_ROOT = str(APPS_DIR('media'))
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 SECURE_BROWSER_XSS_FILTER = True
-X_FRAME_OPTIONS = 'DENY'
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # ADMIN
 # ------------------------------------------------------------------------------

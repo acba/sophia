@@ -3,9 +3,9 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 
 
-def user_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'docs/user_{0}/{1}'.format(instance.user.id, filename)
+# file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+def docs_directory_path(instance, filename):
+    return 'user_{0}/docs/{1}'.format(instance.user.id, filename)
 
 class TextDocument(models.Model):
     """
@@ -13,7 +13,7 @@ class TextDocument(models.Model):
     """
 
     nome = models.CharField('Descrição do Documento', max_length=255, blank=True)
-    file = models.FileField('Arquivo', upload_to=user_directory_path)
+    file = models.FileField('Arquivo', upload_to=docs_directory_path)
     user = models.ForeignKey('users.User', related_name="textdocs", on_delete=models.CASCADE, null=False, default=None)
 
     filename = models.CharField('Nome do Arquivo', max_length=255, blank=True)
@@ -34,11 +34,15 @@ class TextDocument(models.Model):
         return self.nome[:50] + self.filename
 
 
+def docs_wc_directory_path(instance, filename):
+    return 'user_{0}/docs/{1}'.format(instance.textdoc.user.id, filename)
+
+
 class ProcessedText(models.Model):
     textdoc = models.OneToOneField(TextDocument, related_name='processedtext', on_delete=models.CASCADE, primary_key=True)
     texto   = models.TextField('Texto Transcrito', default=None, null=True)
 
-    file_wc = models.FileField('Wordcloud', upload_to='wc/')
+    file_wc = models.FileField('Wordcloud', upload_to=docs_wc_directory_path)
 
     data_criacao     = models.DateTimeField('Data de Criação', auto_now_add=True)
     data_atualizacao = models.DateTimeField('Data de Atualização',auto_now=True)
@@ -80,7 +84,7 @@ class TermoFreqData(models.Model):
 
 # Whenever ANY model is deleted, if it has a file field on it, delete the associated file too
 @receiver(post_delete, sender=TextDocument)
-def delete_files_when_row_deleted_from_db(sender, instance, **kwargs):
+def delete_docfiles_when_row_deleted_from_db(sender, instance, **kwargs):
     for field in sender._meta.concrete_fields:
         if isinstance(field, models.FileField):
             instance_file_field = getattr(instance,field.name)
@@ -88,7 +92,7 @@ def delete_files_when_row_deleted_from_db(sender, instance, **kwargs):
 
 # Whenever ANY model is deleted, if it has a file field on it, delete the associated file too
 @receiver(post_delete, sender=ProcessedText)
-def delete_files_when_row_deleted_from_db(sender, instance, **kwargs):
+def delete_processeddoc_when_row_deleted_from_db(sender, instance, **kwargs):
     for field in sender._meta.concrete_fields:
         if isinstance(field, models.FileField):
             instance_file_field = getattr(instance,field.name)

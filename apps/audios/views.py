@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.files import File
+from django.contrib.auth.decorators import login_required
 
 from .forms import AudioDocumentForm
 from .tables import AudioDocumentTable
@@ -12,6 +13,7 @@ from apps.utils.wordcloud import WordCloudProcessor
 from apps.utils.textprocessor import TextProcessor
 from apps.utils.recognizer import vr, gr
 
+@login_required(login_url='/accounts/login/')
 def lista_audios(request):
     meus_audios = AudioDocument.objects.filter(user__id=request.user.id)
     table = AudioDocumentTable(meus_audios)
