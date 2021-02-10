@@ -7,18 +7,21 @@ from docx import Document
 
 from validate_docbr import CPF, CNPJ
 
-NLTK_PT = nltk.corpus.stopwords.words('portuguese')
+
+def init_nltk():
+    nltk.download('rslp')
+    nltk.download('stopwords')
+    nltk.download('omw')
+
+def get_nltk_pt():
+    return nltk.corpus.stopwords.words('portuguese')
+
 STOPWORDS_EXTRA = [
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
     'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
     'u', 'v', 'x', 'w', 'y', 'z', 'de', 'da', 'das',
     'do', 'dos', '-', '–'
 ]
-
-def init_nltk():
-    nltk.download('rslp')
-    nltk.download('stopwords')
-    nltk.download('omw')
 
 def formata_dado(dado, mask):
     if len(dado) != len(re.sub(r'[^#]', '', mask)):
@@ -27,7 +30,7 @@ def formata_dado(dado, mask):
     _mask = mask.replace('#', '{}')
     return _mask.format(*f'{dado}')
 
-init_nltk()
+
 
 def tp_factory(data, mime):
 
@@ -98,11 +101,11 @@ class TextProcessor:
         return { 'cpfs': cpfs, 'cnpjs': cnpjs, 'emails': emails, 'telefones': telefones, 'urls': urls, 'mais_frequentes': mais_frequentes}
 
     def remove_stopwords(self, _set=False):
-        # tratado = [token.lower() for token in self.text.split() if token not in NLTK_PT and token not in STOPWORDS_EXTRA]
+        # tratado = [token.lower() for token in self.text.split() if token not in get_nltk_pt() and token not in STOPWORDS_EXTRA]
         tratado = []
         for token in self.text.split():
             token = token.lower()
-            if token not in NLTK_PT and token not in STOPWORDS_EXTRA:
+            if token not in get_nltk_pt() and token not in STOPWORDS_EXTRA:
                 tratado.append(token)
 
         if _set:

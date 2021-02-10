@@ -6,15 +6,14 @@ import pyaudio
 
 import speech_recognition as sr
 from vosk import Model, KaldiRecognizer, SetLogLevel
+SetLogLevel(-1)
 
 class Recognizer:
-
     def stream_to_text(self, stream):
         pass
 
     def read_file(self, path):
         pass
-
 
 class VoskRecognizer(Recognizer):
 

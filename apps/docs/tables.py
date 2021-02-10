@@ -1,4 +1,6 @@
 from django.utils.html import format_html
+from django.urls import reverse
+
 import django_tables2 as tables
 from django_tables2.utils import A
 
@@ -9,7 +11,7 @@ class TextDocumentTable(tables.Table):
     class Meta:
         orderable     = True
         template_name = 'django_tables2/bootstrap-responsive.html'
-        # attrs = {'class': 'table table-striper table-bordered'}
+        attrs = {'class': 'table table-hover'}
 
     nome           = tables.Column(verbose_name='Descrição', linkify={
         "viewname": "docs:doc",
@@ -18,13 +20,10 @@ class TextDocumentTable(tables.Table):
     filename       = tables.Column(verbose_name='Arquivo')
     size           = tables.Column(verbose_name='Tamanho')
     # mime           = tables.Column()
-    ext           = tables.Column()
+    ext            = tables.Column()
     foi_processado = tables.BooleanColumn(verbose_name='Transcrito')
     preview        = tables.Column(accessor='processedtext', verbose_name='Preview')
-    remover        = tables.Column(accessor='nome', verbose_name='Remover', linkify={
-        "viewname": "docs:remove_doc",
-        "args": [tables.A("pk")]
-    })
+    remover        = tables.Column(accessor='nome', verbose_name='Remover')
 
     def render_nome(self, value, record):
         return format_html(f'<span style="color: #007bff;" class="hvr-grow">{record.nome}</span>')
@@ -35,11 +34,18 @@ class TextDocumentTable(tables.Table):
     def render_size(self, value, record):
         return format_html(f'{sizeof_fmt(value)}')
 
-    # def render_conteudo(self, value, record):
-    #     return format_html(f'<audio src="{value.url}" controls></audio>')
-
     def render_preview(self, value, record):
         return format_html(f'<span class="font-italic">{value}</span>')
 
+    # def render_remover(self, value, record):
+    #     return format_html(f'<i style="color: #007bff;" class="fa fa-times hvr-grow" aria-hidden="true"></i>')
+
     def render_remover(self, value, record):
-        return format_html(f'<i style="color: #007bff;" class="fa fa-times hvr-grow" aria-hidden="true"></i>')
+        return format_html(f'''
+            <form action="{reverse('docs:remove_doc')}" method="get">
+                <input type="hidden" name="id" value="{record.id}">
+                <button class="btn btn-primary" style="padding: 1px 5px 1px 5px;" type="submit">
+                    <i class="fa fa-times"></i>
+                </button>
+            </form>
+        ''' )

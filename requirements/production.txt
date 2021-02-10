@@ -6,9 +6,6 @@ gunicorn==20.0.4  # https://github.com/benoitc/gunicorn
 
 # Django
 # ------------------------------------------------------------------------------
-django-redis==4.10.0  # https://github.com/niwinz/django-redis
-
-
 
 
 # Conexão MS SQL Server

@@ -1,6 +1,5 @@
 from django.utils.html import format_html
 from django.urls import reverse
-from django.middleware.csrf import get_token
 
 import django_tables2 as tables
 from django_tables2.utils import A
@@ -11,8 +10,8 @@ from .models import AudioDocument
 class AudioDocumentTable(tables.Table):
     class Meta:
         orderable     = True
-        template_name = 'django_tables2/bootstrap4.html'
-        # attrs = {'class': 'table table-striper table-bordered'}
+        template_name = 'django_tables2/bootstrap-responsive.html'
+        attrs = {'class': 'table table-hover'}
 
     nome           = tables.Column(verbose_name='Descrição', linkify={
         "viewname": "audios:audio",

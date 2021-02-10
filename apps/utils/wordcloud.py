@@ -7,7 +7,7 @@ from wordcloud import WordCloud, STOPWORDS
 from io import BytesIO
 import base64
 
-from .textprocessor import NLTK_PT, STOPWORDS_EXTRA
+from .textprocessor import get_nltk_pt, STOPWORDS_EXTRA
 
 class WordCloudProcessor:
 
@@ -18,7 +18,7 @@ class WordCloudProcessor:
 
         # lista de stopwords
         stopwords = set(STOPWORDS)
-        stopwords.update(NLTK_PT)
+        stopwords.update(get_nltk_pt())
         stopwords.update(STOPWORDS_EXTRA)
 
         self.wc = WordCloud(stopwords=stopwords, background_color='white', width=1600, height=800, collocations=False)

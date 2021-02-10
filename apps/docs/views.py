@@ -1,7 +1,8 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.core.files import File
+from django.contrib.auth.decorators import login_required
 
 from .forms import TextDocumentForm
 from .models import TextDocument, ProcessedText, CPFData, CNPJData, EmailData, URLData, TelefoneData, TermoFreqData
@@ -10,24 +11,39 @@ from apps.utils.textprocessor import tp_factory
 from apps.utils.wordcloud import WordCloudProcessor
 from apps.utils import silent_remove
 from apps.docs.tables import TextDocumentTable
+from apps.docs.tasks import get_users_count_task
 
 
 
+@login_required(login_url=reverse_lazy('account_login'))
 def lista_docs(request):
     meus_docs = TextDocument.objects.filter(user__id=request.user.id)
     table = TextDocumentTable(meus_docs)
     table.paginate(page=request.GET.get('page', 1), per_page=10)
 
+    get_users_count_task.delay()
+
     return render(request, 'docs.html', { 'meus_docs': meus_docs, 'table': table })
 
+@login_required(login_url=reverse_lazy('account_login'))
 def detalhe_doc(request, docid):
-    textdoc = TextDocument.objects.filter(id=docid).first()
+    textdoc = TextDocument.objects.filter(user__id=request.user.id, id=docid).first()
     return render(request, 'docs_detalhe.html', { 'textdoc': textdoc })
 
-def remove_doc(request, docid):
-    TextDocument.objects.filter(id=docid).delete()
-    return HttpResponseRedirect(reverse('docs:lista_docs'))
+@login_required(login_url=reverse_lazy('account_login'))
+def remove_doc(request):
+    if request.method == 'POST' and 'id' in request.POST:
+        docid = request.POST['id']
+        TextDocument.objects.filter(user__id=request.user.id, id=docid).delete()
+        return HttpResponseRedirect(reverse('docs:lista_docs'))
+    elif request.method == 'GET' and 'id' in request.GET:
+        docid = request.POST['id']
+        TextDocument.objects.filter(user__id=request.user.id, id=docid).delete()
+        return HttpResponseRedirect(reverse('docs:lista_docs'))
+    else:
+        return HttpResponseRedirect(reverse('docs:lista_docs'))
 
+@login_required(login_url=reverse_lazy('account_login'))
 def upload_doc(request):
     if request.method == 'POST':
         form = TextDocumentForm(request.POST, request.FILES)
@@ -49,9 +65,10 @@ def upload_doc(request):
 
     return render(request, 'docs_upload.html', { 'form': form })
 
+@login_required(login_url=reverse_lazy('account_login'))
 def processa_doc(request, docid):
     if request.method == 'GET':
-        textdoc = TextDocument.objects.filter(id=docid).first()
+        textdoc = TextDocument.objects.filter(user__id=request.user.id, id=docid).first()
 
         tp = tp_factory(textdoc.file, textdoc.mime)
         texto = tp.extract()

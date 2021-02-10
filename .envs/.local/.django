@@ -1,6 +1,5 @@
 # General
 # ------------------------------------------------------------------------------
-DJANGO_READ_DOT_ENV_FILE=True
 USE_DOCKER=yes
 IPYTHONDIR=/app/.ipython
 
@@ -12,3 +11,14 @@ REDIS_URL=redis://redis:6379/0
 # ------------------------------------------------------------------------------
 AD_SERVER_URL=ldap://10.128.0.20
 AD_DOMAIN=@intranet.mppb
+
+
+# Celery
+# ------------------------------------------------------------------------------
+CELERY_BROKER_URL=redis://redis:6379/0
+
+# Flower
+# ------------------------------------------------------------------------------
+CELERY_FLOWER_USER=VbANxwmyqeHCflcMAoGFJoTgWTkFLRIN
+CELERY_FLOWER_PASSWORD=c0toS4ltF6uugEW10IrkjAyulRpErCvSeAlKaN13MRIDvhUeEWcFUl286r4YhLtI
+

@@ -1,8 +1,10 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.core.files import File
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseNotFound
+
 
 from .forms import AudioDocumentForm
 from .tables import AudioDocumentTable
@@ -13,7 +15,7 @@ from apps.utils.wordcloud import WordCloudProcessor
 from apps.utils.textprocessor import TextProcessor
 from apps.utils.recognizer import vr, gr
 
-@login_required(login_url='/accounts/login/')
+@login_required(login_url=reverse_lazy('account_login'))
 def lista_audios(request):
     meus_audios = AudioDocument.objects.filter(user__id=request.user.id)
     table = AudioDocumentTable(meus_audios)
@@ -21,10 +23,12 @@ def lista_audios(request):
 
     return render(request, 'audios.html', { 'meus_audios': meus_audios, 'table': table })
 
+@login_required(login_url=reverse_lazy('account_login'))
 def detalhe_audio(request, audioid):
     audiodoc = AudioDocument.objects.filter(user__id=request.user.id, id=audioid).first()
     return render(request, 'audio_detalhe.html', { 'audiodoc': audiodoc })
 
+@login_required(login_url=reverse_lazy('account_login'))
 def remove_audio(request):
     if request.method == 'POST' and 'id' in request.POST:
         audioid = request.POST['id']
@@ -37,6 +41,7 @@ def remove_audio(request):
     else:
         return HttpResponseRedirect(reverse('audios:lista_audios'))
 
+@login_required(login_url=reverse_lazy('account_login'))
 def upload_audio(request):
     if request.method == 'POST':
         form = AudioDocumentForm(request.POST, request.FILES)
@@ -57,9 +62,13 @@ def upload_audio(request):
 
     return render(request, 'audio_upload.html', { 'form': form })
 
+@login_required(login_url=reverse_lazy('account_login'))
 def processa_audio(request, audioid, processor):
     if request.method == 'GET':
-        audiodoc = AudioDocument.objects.filter(id=audioid).first()
+        audiodoc = AudioDocument.objects.filter(user__id=request.user.id, id=audioid).first()
+
+        if audiodoc is None:
+            return HttpResponseNotFound('Arquivo não encontrado!')
 
         if processor == 'vr':
             proc = 'Vosk'

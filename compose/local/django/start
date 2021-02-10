@@ -4,6 +4,37 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+
+printf "\n"
+printf "#######################\n"
+printf "#   Download NLTLK    #\n"
+printf "#######################\n"
+printf "\n\n"
+
+python manage.py downloadnltk
+
+
+printf "\n"
+printf "#######################\n"
+printf "#   Django Migrate    #\n"
+printf "#######################\n"
+printf "\n\n"
+
 python manage.py migrate
+
+
+printf "\n"
+printf "########################\n"
+printf "#   Django PopulaBD    #\n"
+printf "########################\n"
+printf "\n\n"
+
 python manage.py populabd
+
+printf "\n"
+printf "#####################\n"
+printf "#   Django Serve    #\n"
+printf "#####################\n"
+printf "\n\n"
+
 python manage.py runserver_plus 0.0.0.0:8000 --cert /tmp/cert

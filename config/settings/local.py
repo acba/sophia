@@ -4,14 +4,9 @@ from .base import env
 
 # GENERAL
 # ------------------------------------------------------------------------------
-DEBUG = env.bool('DJANGO_DEBUG', default=True)
+DEBUG = True
 SECRET_KEY = env('DJANGO_SECRET_KEY', default='CBDwXDekJodqhNOYIqQq5D3rzTKrvGFi6aBrP5UWhctkFt3NqzmxS0RE5vKzfERu')
-
-ALLOWED_HOSTS = [
-    "localhost",
-    "0.0.0.0",
-    "127.0.0.1",
-]
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
 
 # ##
 # ## SQL SERVER
@@ -30,9 +25,6 @@ ALLOWED_HOSTS = [
 #     }
 # }
 
-
-
-
 # CACHES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#caches
@@ -42,6 +34,14 @@ CACHES = {
         'LOCATION': ''
     }
 }
+
+
+# EMAIL
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/dev/ref/settings/#email-host
+EMAIL_HOST = env("EMAIL_HOST", default="mailhog")
+EMAIL_PORT = 1025
+
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
@@ -70,3 +70,7 @@ if env('USE_DOCKER') == 'yes':
 # ------------------------------------------------------------------------------
 # https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
 INSTALLED_APPS += ['django_extensions']  # noqa F405
+
+# Celery
+# ------------------------------------------------------------------------------
+CELERY_TASK_EAGER_PROPAGATES = True

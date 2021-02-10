@@ -1,29 +1,69 @@
 version: '3'
 
 services:
-  django:
+  django: &django
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
     image: sophia_local_django
+    container_name: django-dev
     volumes:
       - .:/app
     env_file:
       - ./.envs/.local/.django
       - ./.envs/.local/.mssql
     depends_on:
-      - mssql
+      - mailhog
+    #   - mssql
     ports:
       - "8000:8000"
-    command: /start
 
-  mssql:
-    build:
-      context: .
-      dockerfile: ./compose/local/mssql/Dockerfile
-    image: sophia_local_mssql
-    environment:
-      SA_PASSWORD: "!MSSQL2017_sophia"
-      ACCEPT_EULA: "Y"
+  redis:
+    image: redis:6.0
+    container_name: redis-dev
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    container_name: mailhog-dev
     ports:
-      - "1433:1433"
+      - "8025:8025"
+
+  celeryworker:
+    <<: *django
+    image: sophia_local_celeryworker
+    container_name: celeryworker-dev
+    depends_on:
+      - redis
+      - mailhog
+    ports: []
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    image: sophia_local_celerybeat
+    container_name: celerybeat-dev
+    depends_on:
+      - redis
+      - mailhog
+    ports: []
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    image: sophia_local_flower
+    container_name: flower-dev
+    ports:
+      - "5555:5555"
+    command: /start-flower
+
+
+  # mssql:
+  #   build:
+  #     context: .
+  #     dockerfile: ./compose/local/mssql/Dockerfile
+  #   image: sophia_local_mssql
+  #   environment:
+  #     SA_PASSWORD: "!MSSQL2017_sophia"
+  #     ACCEPT_EULA: "Y"
+  #   ports:
+  #     - "1433:1433"
