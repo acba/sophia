@@ -1,8 +1,9 @@
-FROM python:3.7-slim-stretch
+FROM python:3.8-slim-buster
 
 ENV PYTHONUNBUFFERED 1
 
-
+RUN apt-get update \
+    && apt-get install -y build-essential gcc python3-dev musl-dev
 
 ##
 ## Necessario para instalar os drivers para o SQL Server
@@ -20,25 +21,28 @@ RUN apt-get update \
     && ACCEPT_EULA=Y apt-get install -y --no-install-recommends msodbcsql17 unixodbc-dev \
     && ACCEPT_EULA=Y apt-get install -y --no-install-recommends mssql-tools
 
-
 RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile \
     && echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc \
     && /bin/bash -c "source ~/.bashrc"
 
-
-
-
 RUN apt-get update \
-    # psycopg2 dependencies
-    && apt-get install -y build-essential gcc python3-dev musl-dev \
     # Pillow dependencies
     && apt-get install -y libjpeg-dev zlib1g-dev libfreetype6-dev liblcms2-dev libtiff-dev tk-dev tcl-dev \
+    # Git
+    && apt-get install -y git \
+    # PyAudio
+    && apt-get install -y portaudio19-dev python3-pyaudio sox \
+    # TextProcessor dependencies
+    && apt-get install -y antiword tesseract-ocr ffmpeg \
     # CFFI dependencies
     && apt-get install -y libffi-dev \
     # Translations dependencies
     && apt-get install -y gettext \
     # Dependencia para o django ldap
-    && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
+    && apt-get install -y libldap2-dev libsasl2-dev libssl-dev \
+    # cleaning up unused files
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --system django
 RUN adduser --system --group django
@@ -48,19 +52,26 @@ COPY ./requirements /requirements
 RUN pip install --no-cache-dir -r /requirements/production.txt \
     && rm -rf /requirements
 
-COPY ./compose/production/django/entrypoint /entrypoint
-RUN sed -i 's/\r//' /entrypoint
+COPY --chown=django:django ./compose/production/django/entrypoint /entrypoint
+RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
-RUN chown django /entrypoint
 
-COPY ./compose/production/django/start /start
-RUN sed -i 's/\r//' /start
+COPY --chown=django:django ./compose/production/django/start /start
+RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
-RUN chown django /start
 
-COPY . /app
+COPY --chown=django:django ./compose/production/celery/worker/start /start-celeryworker
+RUN sed -i 's/\r$//g' /start-celeryworker
+RUN chmod +x /start-celeryworker
 
-RUN chown -R django /app
+COPY --chown=django:django ./compose/production/celery/beat/start /start-celerybeat
+RUN sed -i 's/\r$//g' /start-celerybeat
+RUN chmod +x /start-celerybeat
+
+COPY ./compose/production/celery/flower/start /start-flower
+RUN sed -i 's/\r$//g' /start-flower
+RUN chmod +x /start-flower
+COPY --chown=django:django . /app
 
 USER django
 

@@ -1,13 +1,9 @@
-##
-## SCRIP do nginx-brotli alterado do Dockerfile do nginx:1.14-alpine
-##
-
-FROM alpine:3.7 as nginx-brotli
+FROM alpine:3.10
 
 LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 
-ENV NGINX_VERSION 1.14.0
-ENV NGX_BROTLI_COMMIT bfd2885b2da4d763fed18f49216bb935223cd34b
+ENV NGINX_VERSION 1.16.1
+ENV NGX_BROTLI_COMMIT e505dce68acc190cc5a1e780a3b0275e39f160ca
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
@@ -42,6 +38,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		--with-http_xslt_module=dynamic \
 		--with-http_image_filter_module=dynamic \
 		--with-http_geoip_module=dynamic \
+		--with-http_perl_module=dynamic \
 		--with-threads \
 		--with-stream \
 		--with-stream_ssl_module \
@@ -54,9 +51,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		--with-compat \
 		--with-file-aio \
 		--with-http_v2_module \
-    --with-ipv6 \
 		--add-module=/usr/src/ngx_brotli \
-    --with-cc-opt=-Wno-error \
 	" \
 	&& addgroup -S nginx \
 	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
@@ -69,19 +64,19 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		zlib-dev \
 		linux-headers \
 		curl \
-		gnupg \
+		gnupg1 \
 		libxslt-dev \
 		gd-dev \
 		geoip-dev \
-    perl-dev \
-  && apk add --no-cache --virtual .brotli-build-deps \
+		perl-dev \
+	&& apk add --no-cache --virtual .brotli-build-deps \
 		autoconf \
 		libtool \
 		automake \
 		git \
 		g++ \
 		cmake \
-  && mkdir -p /usr/src \
+	&& mkdir -p /usr/src \
 	&& cd /usr/src \
 	&& git clone --recursive https://github.com/google/ngx_brotli.git \
 	&& cd ngx_brotli \
@@ -89,33 +84,22 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& cd .. \
 	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
 	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
+        && sha512sum nginx.tar.gz nginx.tar.gz.asc \
 	&& export GNUPGHOME="$(mktemp -d)" \
-	&& found=''; \
-	for server in \
-		ha.pool.sks-keyservers.net \
-		hkp://keyserver.ubuntu.com:80 \
-		hkp://p80.pool.sks-keyservers.net:80 \
-		pgp.mit.edu \
-	; do \
-		echo "Fetching GPG key $GPG_KEYS from $server"; \
-		gpg --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$GPG_KEYS" && found=yes && break; \
-	done; \
-	test -z "$found" && echo >&2 "error: failed to fetch GPG key $GPG_KEYS" && exit 1; \
-	gpg --batch --verify nginx.tar.gz.asc nginx.tar.gz \
+	&& gpg --keyserver ipv4.pool.sks-keyservers.net --recv-keys "$GPG_KEYS" \
+	&& gpg --batch --verify nginx.tar.gz.asc nginx.tar.gz \
 	&& rm -rf "$GNUPGHOME" nginx.tar.gz.asc \
 	&& mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& rm nginx.tar.gz \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
-	&& sed -i '49s/^.*$/static u_char ngx_http_server_string[] = "Server: :)" CRLF;/g' src/http/ngx_http_header_filter_module.c \
-	&& sed -i '50s/^.*$/static u_char ngx_http_server_full_string[] = "Server: :)" CRLF;/g' src/http/ngx_http_header_filter_module.c \
-	&& sed -i '51s/^.*$/static u_char ngx_http_server_build_string[] = "Server: :)" CRLF;/g' src/http/ngx_http_header_filter_module.c \
 	&& ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
 	&& mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
 	&& mv objs/ngx_http_image_filter_module.so objs/ngx_http_image_filter_module-debug.so \
 	&& mv objs/ngx_http_geoip_module.so objs/ngx_http_geoip_module-debug.so \
+	&& mv objs/ngx_http_perl_module.so objs/ngx_http_perl_module-debug.so \
 	&& mv objs/ngx_stream_geoip_module.so objs/ngx_stream_geoip_module-debug.so \
 	&& ./configure $CONFIG \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
@@ -129,12 +113,13 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& install -m755 objs/ngx_http_xslt_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_xslt_filter_module-debug.so \
 	&& install -m755 objs/ngx_http_image_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_image_filter_module-debug.so \
 	&& install -m755 objs/ngx_http_geoip_module-debug.so /usr/lib/nginx/modules/ngx_http_geoip_module-debug.so \
+	&& install -m755 objs/ngx_http_perl_module-debug.so /usr/lib/nginx/modules/ngx_http_perl_module-debug.so \
 	&& install -m755 objs/ngx_stream_geoip_module-debug.so /usr/lib/nginx/modules/ngx_stream_geoip_module-debug.so \
 	&& ln -s ../../usr/lib/nginx/modules /etc/nginx/modules \
 	&& strip /usr/sbin/nginx* \
 	&& strip /usr/lib/nginx/modules/*.so \
 	&& rm -rf /usr/src/nginx-$NGINX_VERSION \
-  && rm -rf /usr/src/ngx_brotli \
+	&& rm -rf /usr/src/ngx_brotli \
 	\
 	# Bring in gettext so we can get `envsubst`, then throw
 	# the rest away. To do this, we need to install `gettext`
@@ -144,27 +129,21 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& mv /usr/bin/envsubst /tmp/ \
 	\
 	&& runDeps="$( \
-		scanelf --needed --nobanner --format '%n#p' /usr/sbin/nginx /usr/lib/nginx/modules/*.so /tmp/envsubst \
-			| tr ',' '\n' \
+		scanelf --needed --nobanner /usr/sbin/nginx /usr/lib/nginx/modules/*.so /tmp/envsubst \
+			| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
 			| sort -u \
-			| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+			| xargs -r apk info --installed \
+			| sort -u \
 	)" \
-	&& apk add --no-cache --virtual .nginx-rundeps $runDeps \
+	&& apk add --no-cache --virtual .nginx-rundeps tzdata $runDeps \
 	&& apk del .build-deps \
-  && apk del .brotli-build-deps \
+	&& apk del .brotli-build-deps \
 	&& apk del .gettext \
 	&& mv /tmp/envsubst /usr/local/bin/ \
-	\
-	# Bring in tzdata so users could set the timezones through the environment
-	# variables
-	&& apk add --no-cache tzdata \
 	\
 	# forward request and error logs to docker log collector
 	&& ln -sf /dev/stdout /var/log/nginx/access.log \
 	&& ln -sf /dev/stderr /var/log/nginx/error.log
-
-# COPY nginx.conf /etc/nginx/nginx.conf
-# COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 
 
 ###
@@ -184,13 +163,13 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/reposit
 #     apt install -y openssl
 
 # Cria os certificados auto assinados
-RUN openssl genrsa -des3 -passout pass:x -out server.pass.key 2048 && \
-    openssl rsa -passin pass:x -in server.pass.key -out server.key && \
+RUN openssl genrsa -des3 -passout pass:68ab5930-1516-40aa-be68-7855d74b6c83 -out server.pass.key 2048 && \
+    openssl rsa -passin pass:68ab5930-1516-40aa-be68-7855d74b6c83 -in server.pass.key -out server.key && \
     rm server.pass.key && \
     openssl req -new -key server.key -out server.csr -subj "/C=BR/ST=PB/L=JOAO PESSOA/O=MPPB/OU=MPPB/CN=sophia" && \
     openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 
-RUN mkdir /etc/ssl/certs/private/ && \
+RUN mkdir -p /etc/ssl/certs/private/ && \
     cp server.crt /etc/ssl/certs/private/sophia.crt && \
     cp server.key /etc/ssl/certs/private/sophia.key && \
     rm server.crt server.csr server.key

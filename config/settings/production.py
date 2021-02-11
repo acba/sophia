@@ -45,23 +45,26 @@ INSTALLED_APPS += ['gunicorn']  # noqa F405
 
 # STATIC
 # ------------------------
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ## SQL SERVER
 # ------------------------------------------------------------------------------
-DATABASES = {
-    'default': {
-        'ENGINE': 'sql_server.pyodbc',
-        'NAME': env('MSSQL_DB'),
-        'USER': env('MSSQL_USER'),
-        'PASSWORD': env('MSSQL_PASSWORD'),
-        'HOST': env('MSSQL_HOST'),
-        'PORT': '',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        },
-    }
-}
+# fixed_pw = env('MSSQL_PASSWORD')
+# fixed_pw = fixed_pw.replace("'", "")
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'sql_server.pyodbc',
+#         'NAME': env('MSSQL_DB'),
+#         'USER': env('MSSQL_USER'),
+#         'PASSWORD': fixed_pw,
+#         'HOST': env('MSSQL_HOST'),
+#         'PORT': '',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#         },
+#     }
+# }
 
 # LOGGING
 # ------------------------------------------------------------------------------

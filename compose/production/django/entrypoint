@@ -10,11 +10,12 @@ export CELERY_BROKER_URL="${REDIS_URL}"
 mssql_ready() {
 python << END
 import sys
-
 import pyodbc
 
 try:
-    cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=${MSSQL_HOST};DATABASE=${MSSQL_DB};UID=${MSSQL_USER};PWD=${MSSQL_PASSWORD}')
+    pw = ${MSSQL_PASSWORD}
+    pw = pw.replace("'", "")
+    cnxn = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};SERVER=${MSSQL_HOST};DATABASE=${MSSQL_DB};UID=${MSSQL_USER};PWD=" + pw)
     cursor = cnxn.cursor()
 
 except pyodbc.ProgrammingError:
@@ -24,10 +25,10 @@ sys.exit(0)
 END
 }
 until mssql_ready; do
-  >&2 echo 'Waiting for MSSQL to become available...'
+  >&2 echo 'Esperando o SQL Server ficar disponivel...'
   sleep 1
 done
->&2 echo 'MSSQL is available'
+>&2 echo 'SQL Server esta disponivel'
 
 
 

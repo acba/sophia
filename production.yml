@@ -5,32 +5,58 @@ volumes:
 
 services:
 
-  redis:
-    restart: always
-    image: redis:3.2
-
-  django:
-    restart: always
+  django: &django
+    # restart: always
     build:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
-    image: mapariscos_production_django
+    image: sophia_production_django
+    container_name: prod-django
     depends_on:
       - redis
     volumes:
       - production_django:/app
     env_file:
       - ./.envs/.production/.django
+      - ./.envs/.production/.mssql
     ports:
       - "5000:5000"
     command: /start
 
+  redis:
+    # restart: always
+    container_name: prod-redis
+    image: redis:6.0
+
+  celeryworker:
+    <<: *django
+    container_name: prod-celeryworker
+    image: sophia_production_celeryworker
+    ports: []
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    container_name: prod-celerybeat
+    image: sophia_production_celerybeat
+    ports: []
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    container_name: prod-flower
+    image: sophia_production_flower
+    ports:
+      - "5555:5555"
+    command: /start-flower
+
   nginx:
-    restart: always
+    # restart: always
     build:
       context: .
       dockerfile: ./compose/production/nginx/Dockerfile
-    image: mapariscos_production_nginx
+    image: sophia_production_nginx
+    container_name: prod-nginx
     depends_on:
       - django
     volumes:
