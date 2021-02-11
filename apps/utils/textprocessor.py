@@ -14,7 +14,14 @@ def init_nltk():
     nltk.download('omw')
 
 def get_nltk_pt():
-    return nltk.corpus.stopwords.words('portuguese')
+    stopwords = None
+    try:
+        stopwords = nltk.corpus.stopwords.words('portuguese')
+    except LookupError:
+        init_nltk()
+        stopwords = nltk.corpus.stopwords.words('portuguese')
+
+    return stopwords
 
 STOPWORDS_EXTRA = [
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',

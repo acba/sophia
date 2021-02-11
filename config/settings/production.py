@@ -39,16 +39,16 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool('DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS
 SECURE_HSTS_PRELOAD = env.bool('DJANGO_SECURE_HSTS_PRELOAD', default=True)
 SECURE_CONTENT_TYPE_NOSNIFF = env.bool('DJANGO_SECURE_CONTENT_TYPE_NOSNIFF', default=True)
 
-
 # Gunicorn
 # ------------------------------------------------------------------------------
 INSTALLED_APPS += ['gunicorn']  # noqa F405
 
+# STATIC
+# ------------------------
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-##
 ## SQL SERVER
-##
-
+# ------------------------------------------------------------------------------
 DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
@@ -87,12 +87,12 @@ LOGGING = {
             'formatter': 'verbose',
         },
     },
-    "root": {"level": "INFO", "handlers": ["console"]},
+    'root': {'level': 'INFO', 'handlers': ['console']},
     'loggers': {
-        "django.db.backends": {
-            "level": "ERROR",
-            "handlers": ["console"],
-            "propagate": False,
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
         },
         'django.security.DisallowedHost': {
             'level': 'ERROR',
@@ -103,4 +103,10 @@ LOGGING = {
 }
 
 
+# EMAIL
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
+DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL', default='Sophia <noreply@sophia.mppb.mp.br>')
+SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
+EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[SOPHIA]')
 

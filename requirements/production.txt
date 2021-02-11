@@ -11,6 +11,4 @@ gunicorn==20.0.4  # https://github.com/benoitc/gunicorn
 # Conexão MS SQL Server
 # ------------------------------------------------------------------------------
 pyodbc==4.0.30
-django-pyodbc-azure==2.1.0.0
-
-
+django-mssql-backend==2.8.1

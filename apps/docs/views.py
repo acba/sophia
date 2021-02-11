@@ -1,19 +1,12 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
-from django.core.files import File
 from django.contrib.auth.decorators import login_required
 
-from .forms import TextDocumentForm
-from .models import TextDocument, ProcessedText, CPFData, CNPJData, EmailData, URLData, TelefoneData, TermoFreqData
-
-from apps.utils.textprocessor import tp_factory
-from apps.utils.wordcloud import WordCloudProcessor
-from apps.utils import silent_remove
+from apps.docs.forms import TextDocumentForm
+from apps.docs.models import TextDocument
 from apps.docs.tables import TextDocumentTable
-from apps.docs.tasks import get_users_count_task
-
-
+from apps.docs.tasks import  processa_textdoc_task
 
 @login_required(login_url=reverse_lazy('account_login'))
 def lista_docs(request):
@@ -21,13 +14,12 @@ def lista_docs(request):
     table = TextDocumentTable(meus_docs)
     table.paginate(page=request.GET.get('page', 1), per_page=10)
 
-    get_users_count_task.delay()
-
     return render(request, 'docs.html', { 'meus_docs': meus_docs, 'table': table })
 
 @login_required(login_url=reverse_lazy('account_login'))
 def detalhe_doc(request, docid):
     textdoc = TextDocument.objects.filter(user__id=request.user.id, id=docid).first()
+
     return render(request, 'docs_detalhe.html', { 'textdoc': textdoc })
 
 @login_required(login_url=reverse_lazy('account_login'))
@@ -37,7 +29,7 @@ def remove_doc(request):
         TextDocument.objects.filter(user__id=request.user.id, id=docid).delete()
         return HttpResponseRedirect(reverse('docs:lista_docs'))
     elif request.method == 'GET' and 'id' in request.GET:
-        docid = request.POST['id']
+        docid = request.GET['id']
         TextDocument.objects.filter(user__id=request.user.id, id=docid).delete()
         return HttpResponseRedirect(reverse('docs:lista_docs'))
     else:
@@ -69,56 +61,13 @@ def upload_doc(request):
 def processa_doc(request, docid):
     if request.method == 'GET':
         textdoc = TextDocument.objects.filter(user__id=request.user.id, id=docid).first()
-
-        tp = tp_factory(textdoc.file, textdoc.mime)
-        texto = tp.extract()
-        texto = tp.clean()
-        info  = tp.info()
-
-        # Cria ProcessedText
-        pt = ProcessedText.objects.create(texto=texto, textdoc=textdoc)
-
-        # Cria o arquivo WordCloud
-        wp = WordCloudProcessor(tp.remove_stopwords())
-        wp.generate_wordcloud()
-        wp.wc2png(textdoc.file.path)
-        django_file = File(open(f'{textdoc.file.path}.wordcloud.png','rb'))
-        pt.file_wc.save(f'{textdoc.filename}.wordcloud.png', django_file)
-        pt.save()
-
-        # Exclui arquito temporario criado
-        silent_remove(f'{textdoc.file.path}.wordcloud.png')
-
-        # Salva os dados encontrados no texto processado
-        for cpf in info['cpfs']:
-            c = CPFData.objects.create(cpf=cpf, pdoc=pt)
-            c.save()
-
-        for cnpj in info['cnpjs']:
-            c = CNPJData.objects.create(cnpj=cnpj, pdoc=pt)
-            c.save()
-
-        for email in info['emails']:
-            c = EmailData.objects.create(email=email, pdoc=pt)
-            c.save()
-
-        for url in info['urls']:
-            c = URLData.objects.create(url=url, pdoc=pt)
-            c.save()
-
-        for telefone in info['telefones']:
-            c = TelefoneData.objects.create(telefone=telefone, pdoc=pt)
-            c.save()
-
-        # Cria Informacoes de dados mais frequentes
-        for dado in info['mais_frequentes']:
-            c = TermoFreqData.objects.create(termo=dado[0], qtd=dado[1], pdoc=pt)
-            c.save()
-
-        textdoc.foi_processado = True
+        textdoc.processando = True
         textdoc.save()
 
-        return HttpResponseRedirect(reverse('docs:doc', args=[docid]))
+        processa_task = processa_textdoc_task.delay(userid=request.user.id, docid=docid)
+        task_id = processa_task.task_id
+
+        return render(request, 'docs_detalhe.html', { 'textdoc': textdoc, 'task_id': task_id })
     else:
         form = TextDocumentForm()
 

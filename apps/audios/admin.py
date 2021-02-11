@@ -11,7 +11,7 @@ from .models import AudioDocument, ProcessedAudio
 class DocumentAdmin(admin.ModelAdmin):
     form = AudioDocumentForm
     list_display = ('nome', 'file', 'user', 'filename', 'size', 'mime', 'ext', 'data_upload', 'data_atualizacao')
-    fields = ('nome', 'file', 'user', 'filename', 'size', 'mime', 'ext', 'foi_processado')
+    fields = ('nome', 'file', 'user', 'filename', 'size', 'mime', 'ext', 'foi_processado', 'processando')
 
 @admin.register(ProcessedAudio)
 class ProcessedDocumentAdmin(admin.ModelAdmin):

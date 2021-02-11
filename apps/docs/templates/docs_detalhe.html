@@ -7,13 +7,43 @@
   <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-    {% if not textdoc.foi_processado %}
+    {% if not textdoc.foi_processado and not textdoc.processando %}
       <a href="{% url 'docs:processa_doc' textdoc.id %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
         <i class="fas fa-download fa-sm text-white-50"></i> Processar Documento
       </a>
     {% endif %}
 
   </div>
+
+  {% if textdoc.processando %}
+    <!-- Aviso -->
+    <div class="row">
+      <div class="col-xl-12 col-sm-12">
+        <div class="card shadow mb-4">
+          <!-- Card Header -->
+          <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold">Aviso</h6>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body text-center">
+            <h1>Seu documento está sendo processando...</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center" style="font-size: 14px">
+      <div id="progress-bar-message">
+        Esperando a tarefa iniciar...
+      </div>
+    </div>
+    <div class='progress-wrapper' style="padding-top: 10px;">
+      <div id='progress-bar' class='progress-bar progress-bar-striped' role='progressbar' style="height:30px; width: 0%; border-radius: 5px">&nbsp;</div>
+    </div>
+    <div id="celery-result"></div>
+
+  {% endif %}
 
   {% if textdoc.foi_processado %}
 
@@ -213,9 +243,26 @@
         downloadInnerHtml('transcricao.txt', 'transcricao');
       })
     });
-
-
   </script>
+
+{% if task_id %}
+  <script type="text/javascript">
+    function processSuccess(progressBarElement, progressBarMessageElement, result) {
+			// Build Success URL (replace 'namespace' with your own)
+			var success_url = "{% url 'docs:doc' textdoc.id %}"
+			window.location.replace(success_url)
+		}
+
+    // Progress Bar (JQuery)
+    $(function () {
+      var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
+      CeleryProgressBar.initProgressBar(progressUrl, {
+        onSuccess: processSuccess
+      })
+    });
+  </script>
+{% endif %}
+
 
 {% endblock %}
 

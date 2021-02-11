@@ -34,7 +34,7 @@ RUN apt-get update \
     # Git
     && apt-get install -y git \
     # PyAudio
-    && apt-get install -y portaudio19-dev python3-pyaudio \
+    && apt-get install -y portaudio19-dev python3-pyaudio sox \
     # TextProcessor dependencies
     && apt-get install -y antiword tesseract-ocr ffmpeg \
     # CFFI dependencies
@@ -42,7 +42,10 @@ RUN apt-get update \
     # Translations dependencies
     && apt-get install -y gettext \
     # Dependencia para o django ldap
-    && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
+    && apt-get install -y libldap2-dev libsasl2-dev libssl-dev \
+    # cleaning up unused files
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && rm -rf /var/lib/apt/lists/*
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements

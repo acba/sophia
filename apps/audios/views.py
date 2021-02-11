@@ -1,19 +1,12 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
-from django.core.files import File
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseNotFound
 
-
-from .forms import AudioDocumentForm
-from .tables import AudioDocumentTable
-from .models import AudioDocument, ProcessedAudio, TermoFreqData, LegendaTrecho
-
-from apps.utils import silent_remove
-from apps.utils.wordcloud import WordCloudProcessor
-from apps.utils.textprocessor import TextProcessor
-from apps.utils.recognizer import vr, gr
+from apps.audios.forms import AudioDocumentForm
+from apps.audios.tables import AudioDocumentTable
+from apps.audios.models import AudioDocument
+from apps.audios.tasks import processa_audiodoc_task
 
 @login_required(login_url=reverse_lazy('account_login'))
 def lista_audios(request):
@@ -66,58 +59,13 @@ def upload_audio(request):
 def processa_audio(request, audioid, processor):
     if request.method == 'GET':
         audiodoc = AudioDocument.objects.filter(user__id=request.user.id, id=audioid).first()
-
-        if audiodoc is None:
-            return HttpResponseNotFound('Arquivo não encontrado!')
-
-        if processor == 'vr':
-            proc = 'Vosk'
-            lista_vtt = vr.file_to_vtt(audiodoc.file.path)
-        elif processor == 'gr':
-            proc = 'Google'
-            lista_vtt = gr.file_to_vtt(audiodoc.file.path)
-        # Default é o VOSK
-        else:
-            proc = 'Vosk'
-            lista_vtt = vr.file_to_vtt(audiodoc.file.path)
-
-        texto = ''
-        for t in lista_vtt:
-            texto += t['text'] + ' '
-        texto = texto.strip()
-
-        tp = TextProcessor(texto)
-        tp.clean()
-        info = tp.info()
-
-        # Cria ProcessedAudio
-        pa = ProcessedAudio.objects.create(audiodoc=audiodoc, processor=proc)
-
-        # Cria o arquivo Wordcloud
-        wp = WordCloudProcessor(tp.remove_stopwords())
-        wp.generate_wordcloud()
-        wp.wc2png(audiodoc.file.path)
-        django_file = File(open(f'{audiodoc.file.path}.wordcloud.png','rb'))
-        pa.file_wc.save(f'{audiodoc.filename}.wordcloud.png', django_file)
-        pa.save()
-
-        # Exclui arquito temporario criado
-        silent_remove(f'{audiodoc.file.path}.wordcloud.png')
-
-        # Cria Trechos de Legenda
-        for trecho in lista_vtt:
-            l = LegendaTrecho(start=trecho['start'], text=trecho['text'], pdoc=pa)
-            l.save()
-
-        # Cria Informacoes de dados mais frequentes
-        for dado in info['mais_frequentes']:
-            c = TermoFreqData.objects.create(termo=dado[0], qtd=dado[1], pdoc=pa)
-            c.save()
-
-        audiodoc.foi_processado = True
+        audiodoc.processando = True
         audiodoc.save()
 
-        return HttpResponseRedirect(reverse('audios:audio', args=[audioid]))
+        processa_task = processa_audiodoc_task.delay(userid=request.user.id, audioid=audioid, processor=processor)
+        task_id = processa_task.task_id
+
+        return render(request, 'audio_detalhe.html', { 'audiodoc': audiodoc, 'task_id': task_id })
     else:
         form = AudioDocumentForm()
 

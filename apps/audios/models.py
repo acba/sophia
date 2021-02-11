@@ -19,6 +19,7 @@ class AudioDocument(models.Model):
     data_upload      = models.DateTimeField('Data de Upload', auto_now_add=True)
     data_atualizacao = models.DateTimeField('Data de Atualização', auto_now=True)
 
+    processando    = models.BooleanField('Processando', default=False)
     foi_processado = models.BooleanField('Foi Processado', default=False)
     class Meta:
         verbose_name        = "Documento de Audio"

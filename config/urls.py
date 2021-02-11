@@ -30,6 +30,9 @@ urlpatterns = [
     path("users/", include("apps.sophia.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
 
+    # Celery progress
+	path('celery-progress/', include('celery_progress.urls')),
+
     # Rotas principais
     path('', include('apps.sophia.urls', namespace='sophia')),
 
