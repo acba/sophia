@@ -28,21 +28,21 @@
           <!-- Card Body -->
           <div class="card-body text-center">
             <h1>Seu documento está sendo processando...</h1>
+
+            <div class="text-center mt-4" style="font-size: 14px">
+              <div id="progress-bar-message">
+                Esperando a tarefa iniciar...
+              </div>
+            </div>
+            <div class='progress-wrapper' style="padding-top: 10px;">
+              <div id='progress-bar' class='progress-bar progress-bar-striped' role='progressbar' style="height:30px; width: 0%; border-radius: 5px">&nbsp;</div>
+            </div>
+            <div id="celery-result"></div>
+
           </div>
         </div>
       </div>
     </div>
-
-    <div class="text-center" style="font-size: 14px">
-      <div id="progress-bar-message">
-        Esperando a tarefa iniciar...
-      </div>
-    </div>
-    <div class='progress-wrapper' style="padding-top: 10px;">
-      <div id='progress-bar' class='progress-bar progress-bar-striped' role='progressbar' style="height:30px; width: 0%; border-radius: 5px">&nbsp;</div>
-    </div>
-    <div id="celery-result"></div>
-
   {% endif %}
 
   {% if textdoc.foi_processado %}
