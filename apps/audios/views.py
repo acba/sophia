@@ -12,7 +12,7 @@ from apps.audios.tasks import processa_audiodoc_task
 def lista_audios(request):
     meus_audios = AudioDocument.objects.filter(user__id=request.user.id)
     table = AudioDocumentTable(meus_audios)
-    table.paginate(page=request.GET.get('page', 1), per_page=10)
+    table.paginate(page=request.GET.get('page', 1), per_page=5)
 
     return render(request, 'audios.html', { 'meus_audios': meus_audios, 'table': table })
 

@@ -12,7 +12,7 @@ from apps.docs.tasks import  processa_textdoc_task
 def lista_docs(request):
     meus_docs = TextDocument.objects.filter(user__id=request.user.id)
     table = TextDocumentTable(meus_docs)
-    table.paginate(page=request.GET.get('page', 1), per_page=10)
+    table.paginate(page=request.GET.get('page', 1), per_page=5)
 
     return render(request, 'docs.html', { 'meus_docs': meus_docs, 'table': table })
 
