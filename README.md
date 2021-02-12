@@ -118,3 +118,10 @@ $ python manage.py makemigrations
 $ python manage.py migrate
 $ python manage.py runserver
 ```
+
+
+No Docker
+```console
+    docker-compose -f production.yml run --rm django python manage.py migrate
+    docker-compose -f production.yml run --rm django python manage.py populabd
+```
