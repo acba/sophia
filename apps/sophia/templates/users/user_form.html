@@ -5,23 +5,28 @@
 
 {% block content %}
 
-<!--Grid row-->
-<div class="row wow fadeIn">
-  <div class="col-md-12 mb-4">
-    <div class="card">
-      <div class="card-body">
-        <h1>{{ user.username }}</h1>
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Atualizando dados</h1>
+</div>
 
-        <form class="form-horizontal" method="post" action="{% url 'users:update' %}">
+<!-- Aviso -->
+<div class="row">
+  <div class="col-xl-12 col-sm-12">
+    <div class="card shadow mb-4">
+      <!-- Card Header -->
+      <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold">Usuário: {{ user.username }}</h6>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <form method="post" action="{% url 'users:update' %}">
           {% csrf_token %}
           {{ form|crispy }}
-          <div class="control-group">
-            <div class="controls">
-              <button type="submit" class="btn">Update</button>
-            </div>
-          </div>
-        </form>
 
+          <button type="submit" class="btn btn-primary">Atualizar</button>
+        </form>
       </div>
     </div>
   </div>

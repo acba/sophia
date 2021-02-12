@@ -1,16 +1,53 @@
 {% extends "base.html" %}
 {% load static i18n %}
 
-{% block content %}
-<div class="container">
-  <h2>Users</h2>
+{% block heading %}{% endblock heading %}
 
-  <div class="list-group">
-    {% for user in user_list %}
-      <a href="{% url 'users:detail' user.username %}" class="list-group-item">
-        <h4 class="list-group-item-heading">{{ user.username }}</h4>
-      </a>
-    {% endfor %}
+{% block content %}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Usuários</h1>
+</div>
+
+<!-- Aviso -->
+<div class="row">
+  <div class="col-xl-12 col-sm-12">
+    <div class="card shadow mb-4">
+      <!-- Card Header -->
+      <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold">Lista de Usuários</h6>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class='table table-bordered' id='dataTable'>
+            <thead>
+              <th>Usuário</th>
+              <th>Nome do usuário</th>
+            </thead>
+            <tbody>
+              {% for user in user_list %}
+                <tr>
+                  <td>
+                    <a style="color: #007bff;" class="hvr-grow" href="{% url 'users:detail' user.username %}">{{ user.username }}</a>
+                  </td>
+                  <td>{{user.name}}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+<script>
+  $(document).ready(function() {
+    $('#dataTable').DataTable({language: datatables_ptbr});
+  });
+</script>
+
 {% endblock content %}

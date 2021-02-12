@@ -5,19 +5,34 @@
 
 {% block content %}
 
-<!--Grid row-->
-<div class="row wow fadeIn">
-  <div class="col-md-12 mb-4">
-    <div class="card">
-      <div class="card-body">
-        <h2>{{ object.username }}</h2>
-        {% if object.name %}
-          <p>{{ object.name }}</p>
-        {% endif %}
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">{{ object.name }}</h1>
+</div>
 
+<!-- Aviso -->
+<div class="row">
+  <div class="col-xl-12 col-sm-12">
+    <div class="card shadow mb-4">
+      <!-- Card Header -->
+      <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold">{{ object.username }}</h6>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body text-center">
         {% if object == request.user %}
-          <a class="btn btn-primary" href="{% url 'users:update' %}" role="button">Perfil</a>
-          <a class="btn btn-primary" href="{% url 'account_email' %}" role="button">E-Mail</a>
+          <div class="row">
+            <a class="btn btn-primary" href="{% url 'users:update' %}" role="button">Meu Perfil</a>
+          </div>
+          <div class="row">
+            <a class="btn btn-primary" href="{% url 'account_email' %}" role="button">Meu E-Mail</a>
+          </div>
+          {% if request.user.is_superuser %}
+            <div class="row">
+              <a class="btn btn-primary" href="{% url 'users:list' %}" role="button">Lista de Usuários</a>
+            </div>
+          {% endif %}
         {% endif %}
       </div>
     </div>
