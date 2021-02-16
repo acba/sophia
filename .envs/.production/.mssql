@@ -2,5 +2,5 @@
 # ------------------------------------------------------------------------------
 MSSQL_HOST=10.128.24.10
 MSSQL_DB=BD_SOPHIA
-MSSQL_USER=pandora
-MSSQL_PASSWORD='$P@nd0R@#'
+MSSQL_USER=sophia
+MSSQL_PASSWORD=0*S0ph@1(#
