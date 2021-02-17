@@ -4,7 +4,7 @@ import nltk
 import textract
 import datetime
 from webvtt import WebVTT, Caption
-
+import time
 
 from docx import Document
 
@@ -41,13 +41,15 @@ def formata_dado(dado, mask):
     return _mask.format(*f'{dado}')
 
 def convert_ts(dado):
-    return datetime.datetime.strptime(str(dado), '%S.%f').strftime('%H:%M:%S.%f')[:-3]
+    inicial = time.strftime('%H:%M:%S', time.gmtime(dado))
+    milisegundos = '000' if str(dado%1) == '0' else str(10.58%1).split('.')[1][:3]
+
+    return f'{inicial}.{milisegundos}'
 
 def write_vtt(lista_dict, path):
     # start, end, text
     vtt = WebVTT()
 
-    print('write_vtt:', path)
     with open(path, 'w') as writer:
         for dado in lista_dict:
             caption = Caption(
@@ -56,17 +58,6 @@ def write_vtt(lista_dict, path):
                 dado['text']
             )
             vtt.captions.append(caption)
-
-
-            # writer.write(f"{dado['start']} --> {dado['end']}\n")
-            # writer.write(f"{dado['text']}\n")
-            # writer.write(f"\n")
-
-            print(f'''
-                {convert_ts(dado['start'])} --> {convert_ts(dado['end'])}
-                {dado['text']}
-                \n
-            ''')
         vtt.write(writer)
 
 

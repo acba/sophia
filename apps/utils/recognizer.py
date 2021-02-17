@@ -3,7 +3,6 @@ import sys
 import json
 import subprocess
 import pyaudio
-import pprint
 
 import speech_recognition as sr
 from vosk import Model, KaldiRecognizer, SetLogLevel
@@ -27,11 +26,12 @@ class VoskRecognizer(Recognizer):
         self.threshold = 0.0
         self.sample_rate = 16000
         self.model = Model('apps/utils/speechrecognition/model')
-        self.recognizer = KaldiRecognizer(self.model, self.sample_rate)
 
     def is_valid(self, dado):
         return True if 'text' in dado and dado['text'] != '' else False
 
+    def create_recognizer(self):
+        self.recognizer = KaldiRecognizer(self.model, self.sample_rate)
 
     def cria_el(self, resultado):
         start = resultado['result'][0]['start']
@@ -54,16 +54,9 @@ class VoskRecognizer(Recognizer):
             'text': text
         }
 
-    def stream_to_text(self, stream):
-        dados = self.stream_to_vtt(self.recognizer, stream)
-        texto = ''
-        for d in dados:
-            texto += d['text'] + ' '
-
-        return texto.strip()
-
     def stream_to_vtt(self, stream, show=False):
         dados = []
+        self.create_recognizer()
 
         while True:
             data = stream.read(4000)
@@ -72,7 +65,8 @@ class VoskRecognizer(Recognizer):
             if self.recognizer.AcceptWaveform(data):
                 resultado = json.loads(self.recognizer.Result())
                 if show:
-                    pprint.pprint('stream_to_vtt:', resultado)
+                    print('Result')
+                    print(resultado)
 
                 resultado = self.filter_low_conf(resultado)
                 if self.is_valid(resultado):
@@ -80,7 +74,8 @@ class VoskRecognizer(Recognizer):
 
         resultado = json.loads(self.recognizer.FinalResult())
         if show:
-            pprint.pprint('stream_to_vtt:', resultado)
+            print('FinalResult')
+            print(resultado)
 
         resultado = self.filter_low_conf(resultado)
         if self.is_valid(resultado):
@@ -88,34 +83,9 @@ class VoskRecognizer(Recognizer):
 
         return dados
 
-    def file_to_vtt(self, path):
+    def file_to_vtt(self, path, show=False):
         stream = self.read_file(path)
-        return self.stream_to_vtt(stream)
-
-    def mic_to_text(self):
-        p = pyaudio.PyAudio()
-        stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8000)
-        stream.start_stream()
-
-        texto_transcrito = []
-        while True:
-            data = stream.read(4000)
-            if len(data) == 0:
-                break
-            if self.recognizer.AcceptWaveform(data):
-                resultado = self.recognizer.Result()
-                parcial = json.loads(resultado)['text']
-
-                if parcial != '':
-                    texto_transcrito.append(parcial)
-
-                if parcial == 'fechar' or parcial == 'fim':
-                    break
-
-        resultado = self.recognizer.FinalResult()
-        texto_transcrito.append(json.loads(resultado)['text'])
-
-        return texto_transcrito
+        return self.stream_to_vtt(stream, show)
 
     def read_file(self, path):
         params = ['ffmpeg', '-loglevel', 'quiet', '-i', path, '-ar', str(self.sample_rate) , '-ac', '1', '-f', 's16le', '-']
