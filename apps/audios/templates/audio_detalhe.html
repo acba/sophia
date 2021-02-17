@@ -185,6 +185,13 @@
 
 {% endif %}
 
+  <style type='text/css'>
+    /* Para corrigir a legenda do player de video no Chrome */
+    video::-webkit-media-text-track-display {
+      -webkit-transform: translateY(-5em);
+      transform: translateY(-5em);
+    }
+  </style>
 
   <script>
     function playAudio(start) {
