@@ -32,11 +32,15 @@ class AudioDocument(models.Model):
 def audiodoc_wc_directory_path(instance, filename):
     return 'user_{0}/audios/{1}'.format(instance.audiodoc.user.id, filename)
 
+def audiodoc_legenda_directory_path(instance, filename):
+    return 'user_{0}/audios/{1}'.format(instance.audiodoc.user.id, filename)
+
 class ProcessedAudio(models.Model):
     audiodoc = models.OneToOneField(AudioDocument, related_name='processedaudio', on_delete=models.CASCADE, primary_key=True)
     processor = models.CharField('Processador', max_length=255, blank=True)
 
-    file_wc = models.FileField('Wordcloud', upload_to=audiodoc_wc_directory_path)
+    file_wc      = models.FileField('Wordcloud', upload_to=audiodoc_wc_directory_path)
+    file_legenda = models.FileField('Legenda', upload_to=audiodoc_legenda_directory_path)
 
     data_criacao     = models.DateTimeField('Data de Criação', auto_now_add=True)
     data_atualizacao = models.DateTimeField('Data de Atualização',auto_now=True)

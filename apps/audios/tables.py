@@ -29,7 +29,7 @@ class AudioDocumentTable(tables.Table):
         return format_html(f'<span style="color: #007bff;" class="hvr-grow">{record.nome}</span>')
 
     def render_filename(self, value, record):
-        return format_html(f'<a href="{record.file.url}" style="color: #007bff;" class="hvr-grow">{record.filename}</span>')
+        return format_html(f'<a href="{record.file.url}" style="color: #007bff;" class="hvr-grow">{record.filename}</a>')
 
     def render_size(self, value, record):
         return format_html(f'{sizeof_fmt(value)}')

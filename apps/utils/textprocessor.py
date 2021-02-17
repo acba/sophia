@@ -2,6 +2,9 @@ import pdfplumber
 import re
 import nltk
 import textract
+import datetime
+from webvtt import WebVTT, Caption
+
 
 from docx import Document
 
@@ -36,6 +39,36 @@ def formata_dado(dado, mask):
 
     _mask = mask.replace('#', '{}')
     return _mask.format(*f'{dado}')
+
+def convert_ts(dado):
+    return datetime.datetime.strptime(str(dado), '%S.%f').strftime('%H:%M:%S.%f')[:-3]
+
+def write_vtt(lista_dict, path):
+    # start, end, text
+    vtt = WebVTT()
+
+    print('write_vtt:', path)
+    with open(path, 'w') as writer:
+        for dado in lista_dict:
+            caption = Caption(
+                convert_ts(dado['start']),
+                convert_ts(dado['end']),
+                dado['text']
+            )
+            vtt.captions.append(caption)
+
+
+            # writer.write(f"{dado['start']} --> {dado['end']}\n")
+            # writer.write(f"{dado['text']}\n")
+            # writer.write(f"\n")
+
+            print(f'''
+                {convert_ts(dado['start'])} --> {convert_ts(dado['end'])}
+                {dado['text']}
+                \n
+            ''')
+        vtt.write(writer)
+
 
 
 
@@ -169,3 +202,4 @@ class GenericProcessor(TextProcessor):
         self.text = text.decode('utf-8')
 
         return self.text
+

@@ -71,6 +71,10 @@
               <table class='table' style="text-align: left;">
                 <tbody>
                   <tr>
+                    <td style="border-top: none;" class="font-weight-bold py-2 by-0">Descrição</td>
+                    <td style="border-top: none;" class="py-2">{{audiodoc.nome}}</td>
+                  </tr>
+                  <tr>
                     <td style="border-top: none;" class="font-weight-bold py-2 by-0">Processador</td>
                     <td style="border-top: none;" class="py-2">{{audiodoc.processedaudio.processor}}</td>
                   </tr>
@@ -91,7 +95,11 @@
 
             </div>
             <div class="col-xl-6  col-lg-6  col-sm-12">
-              <audio id='audioel' src="{{audiodoc.file.url}}" controls></audio>
+              <!-- <audio id='audioel' src="{{audiodoc.file.url}}" controls></audio> -->
+              <video id='videoel' controls width="500px">
+                <source type="{{audiodoc.mime}}" src="{{audiodoc.file.url}}">
+                <track label="Português" kind="subtitles" srclang="pt-br" src="{{audiodoc.processedaudio.file_legenda.url}}" default>
+              </video>
             </div>
           </div>
         </div>
@@ -180,9 +188,9 @@
 
   <script>
     function playAudio(start) {
-      var audioel = document.getElementById('audioel');
-      audioel.currentTime = start;
-      audioel.play()
+      var videoel = document.getElementById('videoel');
+      videoel.currentTime = start;
+      videoel.play()
     }
 
     $(document).ready(function() {

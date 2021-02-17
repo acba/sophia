@@ -78,6 +78,9 @@
 
             {% block sidebar_items %}
             <li>
+              <a href="{% url 'sophia:buscar' %}" class="collapsible-header waves-effect"><i class="fas fa-search"></i> Buscar</a>
+            </li>
+            <li>
               <a href="{% url 'audios:lista_audios' %}" class="collapsible-header waves-effect"><i class="fas fa-volume-up"></i> Áudios</a>
             </li>
             <li>

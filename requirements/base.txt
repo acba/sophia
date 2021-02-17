@@ -10,7 +10,7 @@ celery-progress==0.0.14
 django-celery-beat==2.2.0  # https://github.com/celery/django-celery-beat
 flower==0.9.7  # https://github.com/mher/flower
 
-ipython==7.19.0
+ipython==7.20.0
 ipdb==0.13.4
 
 # Django
@@ -30,9 +30,10 @@ django-cors-headers==3.7.0 # https://github.com/adamchainz/django-cors-headers
 
 # SpeechRecognition
 # ------------------------------------------------------------------------------
-vosk==0.3.17
+vosk==0.3.21
 SpeechRecognition==3.8.1
 pyaudio==0.2.11
+webvtt-py==0.4.6
 
 # TextProcessor
 # ------------------------------------------------------------------------------

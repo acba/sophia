@@ -3,6 +3,7 @@ import sys
 import json
 import subprocess
 import pyaudio
+import pprint
 
 import speech_recognition as sr
 from vosk import Model, KaldiRecognizer, SetLogLevel
@@ -61,7 +62,7 @@ class VoskRecognizer(Recognizer):
 
         return texto.strip()
 
-    def stream_to_vtt(self, stream):
+    def stream_to_vtt(self, stream, show=False):
         dados = []
 
         while True:
@@ -70,11 +71,17 @@ class VoskRecognizer(Recognizer):
                 break
             if self.recognizer.AcceptWaveform(data):
                 resultado = json.loads(self.recognizer.Result())
+                if show:
+                    pprint.pprint('stream_to_vtt:', resultado)
+
                 resultado = self.filter_low_conf(resultado)
                 if self.is_valid(resultado):
                     dados += [self.cria_el(resultado)]
 
         resultado = json.loads(self.recognizer.FinalResult())
+        if show:
+            pprint.pprint('stream_to_vtt:', resultado)
+
         resultado = self.filter_low_conf(resultado)
         if self.is_valid(resultado):
             dados += [self.cria_el(resultado)]

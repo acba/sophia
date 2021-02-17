@@ -1,0 +1,98 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block heading %}{% endblock heading %}
+
+{% block content %}
+
+  {% if not resultado %}
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <h1 class="h3 mb-0 text-gray-800">Buscador</h1>
+    </div>
+
+    <!-- Buscador -->
+    <div class="row">
+      <div class="col-xl-12 col-sm-12">
+        <div class="card shadow mb-4">
+          <div class="card-body">
+            <form method="post">
+              {% csrf_token %}
+              {{ form|crispy }}
+              <button class="btn btn-primary" type="submit">
+                <i class="fas fa-search"></i>
+                Buscar
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if resultado %}
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <h1 class="h3 mb-0 text-gray-800">Resultados da Busca</h1>
+    </div>
+
+    <!-- Buscador -->
+    <div class="row">
+      <div class="col-xl-12 col-sm-12">
+        <div class="card shadow mb-4">
+          <div class="card-body">
+            <table class='table table-bordered' id='dataTable'>
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Descrição</th>
+                  <th>Filename</th>
+                  <th>Preview</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for doc in docs %}
+                  <tr>
+                    <td>
+                      <!-- <i class="fa fa-file-audio-o" aria-hidden="true"></i> -->
+                      Documento
+                    </td>
+                    <td>
+                      <a href="{% url 'docs:doc' doc.id %}" style="color: #007bff;" class="hvr-grow">{{doc.nome}}</span>
+                    </td>
+                    <td>{{doc.filename}}</td>
+                    <td>{{doc.processedtext}}</td>
+                  </tr>
+                {% endfor %}
+                {% for audio in audios %}
+                  <tr>
+                    <td>
+                      <!-- <i class="fa fa-file-text-o" aria-hidden="true"></i> -->
+                      Áudio
+                    </td>
+                    <td>
+                      <a href="{% url 'audios:audio' audio.id %}" style="color: #007bff;" class="hvr-grow">{{audio.nome}}</span>
+                    </td>
+                    <td>{{audio.filename}}</td>
+                    <td>{{audio.processedaudio}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <script>
+    $(document).ready(function() {
+      $('#dataTable').DataTable({language: datatables_ptbr});
+    });
+  </script>
+
+
+{% endblock content %}
+
