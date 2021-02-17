@@ -13,9 +13,7 @@ import sys
 import pyodbc
 
 try:
-    pw = ${MSSQL_PASSWORD}
-    pw = pw.replace("'", "")
-    cnxn = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};SERVER=${MSSQL_HOST};DATABASE=${MSSQL_DB};UID=${MSSQL_USER};PWD=" + pw)
+    cnxn = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};SERVER=${MSSQL_HOST};DATABASE=${MSSQL_DB};UID=${MSSQL_USER};PWD=${MSSQL_PASSWORD}")
     cursor = cnxn.cursor()
 
 except pyodbc.ProgrammingError:
