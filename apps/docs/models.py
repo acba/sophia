@@ -15,6 +15,7 @@ class TextDocument(models.Model):
     nome = models.CharField('Descrição do Documento', max_length=255, blank=True)
     file = models.FileField('Arquivo', upload_to=docs_directory_path)
     user = models.ForeignKey('users.User', related_name="textdocs", on_delete=models.CASCADE, null=False, default=None)
+    pandora_user = models.IntegerField('ID do Usuário Pandora', null=True)
 
     filename = models.CharField('Nome do Arquivo', max_length=255, blank=True)
     size     = models.BigIntegerField('Tamanho Arquivo', null=True)
