@@ -7,7 +7,7 @@ from .forms import TextDocumentForm
 class DocumentAdmin(admin.ModelAdmin):
     form = TextDocumentForm
     list_display = ('nome', 'file', 'user', 'filename', 'size', 'mime', 'ext', 'data_upload', 'data_atualizacao')
-    fields = ('nome', 'file', 'user', 'filename', 'size', 'mime', 'ext', 'foi_processado', 'processando')
+    fields = ('nome', 'file', 'user', 'api_user', 'filename', 'hashfile', 'size', 'mime', 'ext', 'foi_processado', 'processando')
 
 
 @admin.register(ProcessedText)

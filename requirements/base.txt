@@ -9,6 +9,7 @@ celery==4.4.6  # pyup: < 5.0,!=4.4.7  # https://github.com/celery/celery
 celery-progress==0.0.14
 django-celery-beat==2.2.0  # https://github.com/celery/django-celery-beat
 flower==0.9.7  # https://github.com/mher/flower
+netaddr==0.8.0 # https://github.com/netaddr/netaddr
 
 ipython==7.20.0
 ipdb==0.13.4

@@ -1,16 +1,28 @@
+import os
+
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 
+from apps.utils import hash_file
+
 # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
 def audiodoc_directory_path(instance, filename):
-    return 'user_{0}/audios/{1}'.format(instance.user.id, filename)
+    instance.file.open()
+    _, filename_ext = os.path.splitext(filename)
+
+    hash_sha256 = hash_file(instance.file)
+    instance.hashfile = hash_sha256
+
+    return 'user_{0}/audios/{1}.{2}'.format(instance.user.id, hash_sha256, filename_ext)
 
 class AudioDocument(models.Model):
     nome = models.CharField('Descrição do Áudio', max_length=255, blank=True)
     file = models.FileField('Arquivo', upload_to=audiodoc_directory_path)
     user = models.ForeignKey('users.User', related_name="audiodocs", on_delete=models.CASCADE, null=False, default=None)
+    api_user = models.IntegerField('ID do API User', null=True)
 
+    hashfile = models.CharField('Hash do Arquivo', max_length=255, null=True)
     filename = models.CharField('Nome do Arquivo', max_length=255, blank=True)
     size     = models.BigIntegerField('Tamanho Arquivo', null=True)
     mime     = models.CharField('MIME Type', max_length=255, blank=True)

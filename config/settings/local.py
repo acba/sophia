@@ -6,7 +6,7 @@ from .base import env
 # ------------------------------------------------------------------------------
 DEBUG = True
 SECRET_KEY = env('DJANGO_SECRET_KEY', default='CBDwXDekJodqhNOYIqQq5D3rzTKrvGFi6aBrP5UWhctkFt3NqzmxS0RE5vKzfERu')
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", '10.128.25.242']
 
 # ##
 # ## SQL SERVER
