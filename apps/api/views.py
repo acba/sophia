@@ -6,7 +6,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.parsers import FileUploadParser
+from rest_framework.parsers import FileUploadParser, MultiPartParser
 
 User = get_user_model()
 
@@ -35,7 +35,8 @@ class DocViewSet(viewsets.ModelViewSet):
         & WhiteListPermission
         & UserIDPermission
     ]
-    parser_classes = [FileUploadParser]
+    # parser_classes = [FileUploadParser]
+    parser_classes = [MultiPartParser]
 
     @action(detail=True, methods=['get'])
     def status(self, request, *args, **kwargs):
@@ -47,43 +48,55 @@ class DocViewSet(viewsets.ModelViewSet):
         })
 
     def create(self, request):
+        data = dict(request.data)
 
-        if 'file' not in request.data:
+        if 'files' not in data:
             return Response({
                 'status': False,
-                'msg': 'Documento anexado não encontrado'
+                'msg': 'Nenhum documento anexado encontrado'
             })
 
-        if request.data['file'].content_type.startswith('audio') or \
-            request.data['file'].content_type.startswith('video'):
-            return Response({
-                'status': False,
-                'msg': 'Rota não funciona para audios ou videos, favor consultar outra rota.'
-            })
+        resultado = []
+        anexos = data['files']
+        for anexo in anexos:
 
-        api_userid = request.META.get('HTTP_X_API_USERID', None)
-        hash_sha256 = hash_file(request.data['file'])
+            if not anexo.content_type.startswith('audio') \
+                and not anexo.content_type.startswith('video'):
 
-        try:
-            textdoc = TextDocument.objects.create(user=request.user, api_user=api_userid, hashfile=hash_sha256, file=request.data['file'])
-        except IntegrityError:
-            return Response({
-                'status': False,
-                'msg': 'Documento já existente para o usuário'
-            })
+                api_userid = request.META.get('HTTP_X_API_USERID', None)
+                hash_sha256 = hash_file(anexo)
 
-        textdoc.nome     = request.data['file'].name
-        textdoc.size     = textdoc.file.size
-        textdoc.filename = request.data['file'].name
-        textdoc.mime     = request.FILES['file'].content_type
-        textdoc.ext      = textdoc.file.name.split('.')[-1]
-        textdoc.save()
+                try:
+                    textdoc = TextDocument.objects.create(user=request.user, api_user=api_userid, hashfile=hash_sha256, file=anexo)
+
+                    textdoc.nome     = anexo.name
+                    textdoc.size     = anexo.size
+                    textdoc.filename = anexo.name
+                    textdoc.mime     = anexo.content_type
+                    textdoc.ext      = textdoc.file.name.split('.')[-1]
+                    # textdoc.save()
+
+                    resultado.append({
+                        'filename': anexo.name,
+                        'msg': 'Documento criado com sucesso'
+                    })
+                except IntegrityError:
+                    resultado.append({
+                        'filename': anexo.name,
+                        'msg': 'Documento já existente para o usuário'
+                    })
+            else:
+                resultado.append({
+                    'filename': anexo.name,
+                    'msg': 'Rota não funciona para audios ou videos, favor consultar rota /audios'
+                })
 
         return Response({
             'status': True,
-            'msg': 'Doc criado com sucesso',
-            'data': textdoc.id,
+            'msg': 'Consulta processada com sucesso',
+            'data': resultado
         })
+
 
     @action(detail=True, methods=['post'])
     def processa(self, request, *args, **kwargs):
